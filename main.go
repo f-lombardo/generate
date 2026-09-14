@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jacoelho/banking/iban"
@@ -40,27 +41,11 @@ type Options struct {
 	otherArgs    map[string]string
 }
 
-const defaultCountry = "IT"
-
-func main() {
-	opts, err := readOptions()
+func stopIf(err error) {
 	if err != nil {
-		panic(err)
+		fmt.Fprintln(os.Stderr, err.Error())
+		os.Exit(1)
 	}
-
-	result, err := executeCommand(opts)
-	if err != nil {
-		panic(err)
-	}
-
-	if *opts.clipboard {
-		err = copyToClipboard(result)
-		if err != nil {
-			panic(err)
-		}
-	}
-
-	fmt.Println(result)
 }
 
 func copyToClipboard(result string) error {
@@ -69,12 +54,20 @@ func copyToClipboard(result string) error {
 		return err
 	}
 
-	ctx := context.Background()
-	clipboard.Write(ctx, clipboard.FmtText, []byte(result))
+	// Attende massimo 1 secondo
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+
+	ch, err := clipboard.Write(ctx, clipboard.FmtText, []byte(result))
+	stopIf(err)
+
+	select {
+	case <-ch:
+	case <-ctx.Done():
+	}
 
 	return nil
 }
-
 func executeCommand(opts Options) (string, error) {
 	switch opts.operation {
 	case "iban":
@@ -111,6 +104,7 @@ func readOptions() (Options, error) {
 
 	// iban subcommand
 	ibanCmd := flag.NewFlagSet("iban", flag.ExitOnError)
+	defaultCountry := "IT"
 	inputCountry := ibanCmd.String("country", defaultCountry, "IBAN country code (e.g. IT, ES, NL")
 	ibanCmd.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: generate iban [-country COUNTRY_CODE]\n\nOpzioni:\n")
@@ -171,4 +165,19 @@ func readOptions() (Options, error) {
 	}
 
 	return options, nil
+}
+
+func main() {
+	opts, err := readOptions()
+	stopIf(err)
+
+	result, err := executeCommand(opts)
+	stopIf(err)
+
+	if *opts.clipboard {
+		err = copyToClipboard(result)
+		stopIf(err)
+	}
+
+	fmt.Println(result)
 }
