@@ -60,13 +60,6 @@ type Options struct {
 	otherArgs    map[string]string
 }
 
-func stopIf(err error) {
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err.Error())
-		os.Exit(1)
-	}
-}
-
 func copyToClipboard(result string) error {
 	err := clipboard.Init()
 	if err != nil {
@@ -77,7 +70,7 @@ func copyToClipboard(result string) error {
 	defer cancel()
 
 	ch, err := clipboard.Write(ctx, clipboard.FmtText, []byte(result))
-	stopIf(err)
+	StopIf(err)
 
 	select {
 	case <-ch:
@@ -178,17 +171,17 @@ func readOptions() (Options, error) {
 
 func main() {
 	opts, err := readOptions()
-	stopIf(err)
+	StopIf(err)
 
 	structResult, err := opts.command.Execute(opts.otherArgs)
-	stopIf(err)
+	StopIf(err)
 
 	result, err := opts.outputFormat.formatter.Format(structResult)
-	stopIf(err)
+	StopIf(err)
 
 	if *opts.clipboard {
 		err = copyToClipboard(result)
-		stopIf(err)
+		StopIf(err)
 	}
 
 	fmt.Println(result)

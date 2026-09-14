@@ -14,7 +14,7 @@ type JsonFormatter struct {
 
 func (j JsonFormatter) Format(structResult fmt.Stringer) (string, error) {
 	result, err := json.Marshal(structResult)
-	stopIf(err)
+	StopIf(err)
 	return string(result), nil
 }
 
