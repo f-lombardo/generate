@@ -170,9 +170,9 @@ func readOptions() (Options, error) {
 	uuidCmd := flag.NewFlagSet("uuid", flag.ExitOnError)
 	defaultVersion := "4"
 	uuidVersion := uuidCmd.String("version", defaultVersion, "UUID version (4 or 7)")
-	ibanCmd.Usage = func() {
+	uuidCmd.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: generate uuid [-version 7]\n\nOptions:\n")
-		ibanCmd.PrintDefaults()
+		uuidCmd.PrintDefaults()
 	}
 
 	flag.Usage = func() {
@@ -186,7 +186,10 @@ func readOptions() (Options, error) {
 		ibanCmd.PrintDefaults()
 		fmt.Fprintf(os.Stderr, "\n")
 
-		fmt.Fprintf(os.Stderr, "  uuid\tGenerates a UUID v4\n\n")
+		fmt.Fprintf(os.Stderr, "  uuid\tGenerates a UUID v4 or v7\n\n")
+		fmt.Fprintf(os.Stderr, "  Command options:\n")
+		uuidCmd.PrintDefaults()
+		fmt.Fprintf(os.Stderr, "\n")
 	}
 
 	// Questo legge tutto fino a quando non incontra qualcosa che non è un flag globale (es. il sotto-comando)
