@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -84,35 +85,57 @@ func copyToClipboard(result string) error {
 	return nil
 }
 
-func executeCommand(opts Options) (string, error) {
+type IbanResult struct {
+	IBAN string
+}
+
+func (r IbanResult) String() string {
+	return r.IBAN
+}
+
+type UUIDResult struct {
+	UUID string
+}
+
+func (r UUIDResult) String() string {
+	return r.UUID
+}
+
+func executeCommand(opts Options) (fmt.Stringer, error) {
 	switch opts.operation {
 	case "iban":
 		code, err := iban.Generate(opts.otherArgs["country"])
 		if err != nil {
-			return "", err
+			return nil, err
 		}
 
-		return code, nil
+		return IbanResult{
+			IBAN: code,
+		}, nil
 
 	case "uuid":
 		switch opts.otherArgs["version"] {
 		case "4":
 			code, err := uuid.NewRandom()
 			if err != nil {
-				return "", err
+				return nil, err
 			}
-			return code.String(), nil
+			return UUIDResult{
+				UUID: code.String(),
+			}, nil
 		case "7":
 			code, err := uuid.NewRandom()
 			if err != nil {
-				return "", err
+				return nil, err
 			}
-			return code.String(), nil
+			return UUIDResult{
+				UUID: code.String(),
+			}, nil
 		default:
-			return "", errors.New("Invalid version: " + opts.otherArgs["version"])
+			return nil, errors.New("Invalid version: " + opts.otherArgs["version"])
 		}
 	default:
-		return "", errors.New("Invalid command: " + opts.operation)
+		return nil, errors.New("Invalid command: " + opts.operation)
 	}
 }
 
@@ -200,11 +223,27 @@ func readOptions() (Options, error) {
 	return options, nil
 }
 
+func formatForOutput(structResult fmt.Stringer, format *outputFormat) (string, error) {
+	switch format.String() {
+	case "json":
+		result, err := json.Marshal(structResult)
+		stopIf(err)
+		return string(result), nil
+	case "tab":
+		return structResult.String(), nil
+	default:
+		return "", errors.New("Unknown format: " + format.String())
+	}
+}
+
 func main() {
 	opts, err := readOptions()
 	stopIf(err)
 
-	result, err := executeCommand(opts)
+	structResult, err := executeCommand(opts)
+	stopIf(err)
+
+	result, err := formatForOutput(structResult, opts.outputFormat)
 	stopIf(err)
 
 	if *opts.clipboard {
