@@ -9,8 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
-	"github.com/jacoelho/banking/iban"
 	"golang.design/x/clipboard"
 )
 
@@ -39,16 +37,16 @@ func (f *OutputFormat) Set(valore string) error {
 	}
 }
 
-type uuidVersion string
+type UuidVersion string
 
-func (f *uuidVersion) String() string {
+func (f *UuidVersion) String() string {
 	return string(*f)
 }
 
-func (f *uuidVersion) Set(valore string) error {
+func (f *UuidVersion) Set(valore string) error {
 	switch valore {
 	case "4", "7":
-		*f = uuidVersion(valore)
+		*f = UuidVersion(valore)
 		return nil
 	default:
 		return errors.New("UUID version should be '4' or '7' (default 4)")
@@ -58,7 +56,7 @@ func (f *uuidVersion) Set(valore string) error {
 type Options struct {
 	outputFormat *OutputFormat
 	clipboard    *bool
-	operation    string
+	command      Command
 	otherArgs    map[string]string
 }
 
@@ -87,60 +85,6 @@ func copyToClipboard(result string) error {
 	}
 
 	return nil
-}
-
-type IbanResult struct {
-	IBAN string
-}
-
-func (r IbanResult) String() string {
-	return r.IBAN
-}
-
-type UUIDResult struct {
-	UUID string
-}
-
-func (r UUIDResult) String() string {
-	return r.UUID
-}
-
-func executeCommand(opts Options) (fmt.Stringer, error) {
-	switch opts.operation {
-	case "iban":
-		code, err := iban.Generate(opts.otherArgs["country"])
-		if err != nil {
-			return nil, err
-		}
-
-		return IbanResult{
-			IBAN: code,
-		}, nil
-
-	case "uuid":
-		switch opts.otherArgs["version"] {
-		case "4":
-			code, err := uuid.NewRandom()
-			if err != nil {
-				return nil, err
-			}
-			return UUIDResult{
-				UUID: code.String(),
-			}, nil
-		case "7":
-			code, err := uuid.NewRandom()
-			if err != nil {
-				return nil, err
-			}
-			return UUIDResult{
-				UUID: code.String(),
-			}, nil
-		default:
-			return nil, errors.New("Invalid version: " + opts.otherArgs["version"])
-		}
-	default:
-		return nil, errors.New("Invalid command: " + opts.operation)
-	}
 }
 
 func readOptions() (Options, error) {
@@ -213,7 +157,7 @@ func readOptions() (Options, error) {
 		if err != nil {
 			return Options{}, err
 		}
-		options.operation = "iban"
+		options.command = IbanCommand{}
 		options.otherArgs["country"] = strings.ToUpper(*inputCountry)
 
 	case "uuid":
@@ -222,7 +166,7 @@ func readOptions() (Options, error) {
 		if err != nil {
 			return Options{}, err
 		}
-		options.operation = "uuid"
+		options.command = UuidCommand{}
 		options.otherArgs["version"] = *uuidVersion
 
 	default:
@@ -236,7 +180,7 @@ func main() {
 	opts, err := readOptions()
 	stopIf(err)
 
-	structResult, err := executeCommand(opts)
+	structResult, err := opts.command.Execute(opts.otherArgs)
 	stopIf(err)
 
 	result, err := opts.outputFormat.formatter.Format(structResult)
