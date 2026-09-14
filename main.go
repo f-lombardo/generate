@@ -34,6 +34,22 @@ func (f *outputFormat) Set(valore string) error {
 	}
 }
 
+type uuidVersion string
+
+func (f *uuidVersion) String() string {
+	return string(*f)
+}
+
+func (f *uuidVersion) Set(valore string) error {
+	switch valore {
+	case "4", "7":
+		*f = uuidVersion(valore)
+		return nil
+	default:
+		return errors.New("UUID version should be '4' or '7' (default 4)")
+	}
+}
+
 type Options struct {
 	outputFormat *outputFormat
 	clipboard    *bool
@@ -54,7 +70,6 @@ func copyToClipboard(result string) error {
 		return err
 	}
 
-	// Attende massimo 1 secondo
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
@@ -68,6 +83,7 @@ func copyToClipboard(result string) error {
 
 	return nil
 }
+
 func executeCommand(opts Options) (string, error) {
 	switch opts.operation {
 	case "iban":
@@ -79,12 +95,22 @@ func executeCommand(opts Options) (string, error) {
 		return code, nil
 
 	case "uuid":
-		code, err := uuid.NewRandom()
-		if err != nil {
-			return "", err
+		switch opts.otherArgs["version"] {
+		case "4":
+			code, err := uuid.NewRandom()
+			if err != nil {
+				return "", err
+			}
+			return code.String(), nil
+		case "7":
+			code, err := uuid.NewRandom()
+			if err != nil {
+				return "", err
+			}
+			return code.String(), nil
+		default:
+			return "", errors.New("Invalid version: " + opts.otherArgs["version"])
 		}
-		return code.String(), nil
-
 	default:
 		return "", errors.New("Invalid command: " + opts.operation)
 	}
@@ -105,14 +131,20 @@ func readOptions() (Options, error) {
 	// iban subcommand
 	ibanCmd := flag.NewFlagSet("iban", flag.ExitOnError)
 	defaultCountry := "IT"
-	inputCountry := ibanCmd.String("country", defaultCountry, "IBAN country code (e.g. IT, ES, NL")
+	inputCountry := ibanCmd.String("country", defaultCountry, "IBAN country code (e.g. IT, ES, NL)")
 	ibanCmd.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage: generate iban [-country COUNTRY_CODE]\n\nOpzioni:\n")
+		fmt.Fprintf(os.Stderr, "Usage: generate iban [-country COUNTRY_CODE]\n\nOptions:\n")
 		ibanCmd.PrintDefaults()
 	}
 
 	// uuid subcommand
-	uuid := flag.NewFlagSet("uuid", flag.ExitOnError)
+	uuidCmd := flag.NewFlagSet("uuid", flag.ExitOnError)
+	defaultVersion := "4"
+	uuidVersion := uuidCmd.String("version", defaultVersion, "UUID version (4 or 7)")
+	ibanCmd.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage: generate uuid [-version 7]\n\nOptions:\n")
+		ibanCmd.PrintDefaults()
+	}
 
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: generate [global options] <command> [command options]\n\n")
@@ -154,11 +186,12 @@ func readOptions() (Options, error) {
 
 	case "uuid":
 		// Passiamo al sotto-comando tutti gli argomenti che vengono DOPO di lui
-		err := uuid.Parse(remainingArgs[1:])
+		err := uuidCmd.Parse(remainingArgs[1:])
 		if err != nil {
 			return Options{}, err
 		}
 		options.operation = "uuid"
+		options.otherArgs["version"] = *uuidVersion
 
 	default:
 		return Options{}, errors.New("Invalid command: " + subcommand)
