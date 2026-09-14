@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -16,19 +15,24 @@ import (
 )
 
 // 1. Definiamo un nuovo tipo stringa
-type outputFormat string
+type OutputFormat struct {
+	formatter Formatter
+}
 
 // 2. Implementiamo il metodo String() (richiesto da flag.Value)
-func (f *outputFormat) String() string {
-	return string(*f)
+func (f *OutputFormat) String() string {
+	return fmt.Sprintf("%T", f)
 }
 
 // 3. Implementiamo il metodo Set() (richiesto da flag.Value)
 // È qui che avviene la validazione in tempo reale!
-func (f *outputFormat) Set(valore string) error {
+func (f *OutputFormat) Set(valore string) error {
 	switch valore {
-	case "json", "tab":
-		*f = outputFormat(valore)
+	case "json":
+		f.formatter = JsonFormatter{}
+		return nil
+	case "tab":
+		f.formatter = TabFormatter{}
 		return nil
 	default:
 		return errors.New("output format must be 'json' o 'tab' (default)")
@@ -52,7 +56,7 @@ func (f *uuidVersion) Set(valore string) error {
 }
 
 type Options struct {
-	outputFormat *outputFormat
+	outputFormat *OutputFormat
 	clipboard    *bool
 	operation    string
 	otherArgs    map[string]string
@@ -141,14 +145,16 @@ func executeCommand(opts Options) (fmt.Stringer, error) {
 
 func readOptions() (Options, error) {
 	options := Options{
-		outputFormat: new(outputFormat),
+		outputFormat: new(OutputFormat),
 		clipboard:    new(bool),
 		otherArgs:    make(map[string]string),
 	}
 
 	options.clipboard = flag.Bool("clipboard", true, "Copies the results to the system clipboard. E.g. --clipboard=false")
 
-	*options.outputFormat = "tab"
+	*options.outputFormat = OutputFormat{
+		formatter: TabFormatter{},
+	}
 	flag.Var(options.outputFormat, "output", "Output format. Valid values: json, tab. Default value: tab")
 
 	// iban subcommand
@@ -223,19 +229,6 @@ func readOptions() (Options, error) {
 	return options, nil
 }
 
-func formatForOutput(structResult fmt.Stringer, format *outputFormat) (string, error) {
-	switch format.String() {
-	case "json":
-		result, err := json.Marshal(structResult)
-		stopIf(err)
-		return string(result), nil
-	case "tab":
-		return structResult.String(), nil
-	default:
-		return "", errors.New("Unknown format: " + format.String())
-	}
-}
-
 func main() {
 	opts, err := readOptions()
 	stopIf(err)
@@ -243,7 +236,7 @@ func main() {
 	structResult, err := executeCommand(opts)
 	stopIf(err)
 
-	result, err := formatForOutput(structResult, opts.outputFormat)
+	result, err := opts.outputFormat.formatter.Format(structResult)
 	stopIf(err)
 
 	if *opts.clipboard {
