@@ -80,18 +80,19 @@ func copyToClipboard(result string) error {
 	return nil
 }
 
-func readOptions() (Options, error) {
+func readOptions(args []string) (Options, error) {
 	options := Options{
 		clipboard: new(bool),
 		otherArgs: make(map[string]string),
 	}
 
-	options.clipboard = flag.Bool("clipboard", true, "Copies the results to the system clipboard. E.g. --clipboard=false")
+	fs := flag.NewFlagSet("create", flag.ContinueOnError)
+
+	options.clipboard = fs.Bool("clipboard", true, "Copies the results to the system clipboard. E.g. --clipboard=false")
 
 	options.outputFormat = defaultFormat()
-	flag.Var(&options.outputFormat, "output", "Output format. Valid values: json, tab. Default value: tab")
+	fs.Var(&options.outputFormat, "output", "Output format. Valid values: json, tab. Default value: tab")
 
-	// iban subcommand
 	ibanCmd := flag.NewFlagSet("iban", flag.ExitOnError)
 	defaultCountry := "IT"
 	inputCountry := ibanCmd.String("country", defaultCountry, "IBAN country code (e.g. IT, ES, NL)")
@@ -109,7 +110,7 @@ func readOptions() (Options, error) {
 		uuidCmd.PrintDefaults()
 	}
 
-	flag.Usage = func() {
+	fs.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: generate [global options] <command> [command options]\n\n")
 		fmt.Fprintf(os.Stderr, "Global options:\n")
 		flag.PrintDefaults()
@@ -120,26 +121,28 @@ func readOptions() (Options, error) {
 		ibanCmd.PrintDefaults()
 		fmt.Fprintf(os.Stderr, "\n")
 
-		fmt.Fprintf(os.Stderr, "  uuid\tGenerates a UUID v4 or v7\n\n")
+		fmt.Fprintf(os.Stderr, "  uuid\tGenerates a UUID v4 or v7\n")
 		fmt.Fprintf(os.Stderr, "  Command options:\n")
 		uuidCmd.PrintDefaults()
 		fmt.Fprintf(os.Stderr, "\n")
 	}
 
-	// Questo legge tutto fino a quando non incontra qualcosa che non è un flag globale (es. il sotto-comando)
-	flag.Parse()
+	if err := fs.Parse(args); err != nil {
+		return Options{}, err
+	}
 
-	// flag.Args() restituisce i parametri rimasti dopo aver tolto i flag globali.
+	// fs.Args() restituisce i parametri rimasti dopo aver tolto i flag globali.
 	// Il primo elemento rimasto DOVREBBE essere il nostro sotto-comando.
-	remainingArgs := flag.Args()
+	remainingArgs := fs.Args()
 
 	if len(remainingArgs) < 1 {
-		flag.Usage()
+		fs.Usage()
 		return Options{}, errors.New("no command specified")
 	}
 
 	subcommand := remainingArgs[0]
 
+	// iban subcommand
 	switch subcommand {
 	case "iban":
 		// Passiamo al sotto-comando tutti gli argomenti che vengono DOPO di lui
@@ -173,7 +176,7 @@ func defaultFormat() OutputFormat {
 }
 
 func main() {
-	opts, err := readOptions()
+	opts, err := readOptions(os.Args[1:])
 	StopIf(err)
 
 	structResult, err := opts.command.Execute(opts.otherArgs)
