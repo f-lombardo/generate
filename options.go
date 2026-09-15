@@ -83,7 +83,8 @@ func readOptions(args []string, outputWriter io.Writer) (Options, error) {
 	uuidCmd := flag.NewFlagSet("uuid", flag.ContinueOnError)
 	uuidCmd.SetOutput(outputWriter)
 	defaultVersion := "4"
-	uuidVersion := uuidCmd.String("version", defaultVersion, "UUID version (4 or 7)")
+	uuidVersion := UuidVersion(defaultVersion)
+	uuidCmd.Var(&uuidVersion, "version", "UUID version (4 or 7)")
 	uuidCmd.Usage = func() {
 		fmt.Fprintf(ibanCmd.Output(), "Usage: generate uuid [-version uuid_version_number]\n\nOptions:\n")
 		uuidCmd.PrintDefaults()
@@ -139,9 +140,10 @@ func readOptions(args []string, outputWriter io.Writer) (Options, error) {
 			return Options{}, err
 		}
 		options.command = UuidCommand{}
-		options.otherArgs["version"] = *uuidVersion
+		options.otherArgs["version"] = uuidVersion.String()
 
 	default:
+		fs.Usage()
 		return Options{}, errors.New("Invalid command: " + subcommand)
 	}
 

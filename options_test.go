@@ -110,6 +110,49 @@ func TestHelpArgs(t *testing.T) {
 	}
 }
 
+func TestWrongArgs(t *testing.T) {
+
+	tests := []struct {
+		testName        string
+		args            []string
+		expectedMessage string
+		expectedError   string
+	}{
+		{
+			testName:        "no command",
+			args:            []string{},
+			expectedMessage: "generate [global options] <command> [command options]",
+			expectedError:   "no command specified",
+		},
+		{
+			testName:        "wrong command",
+			args:            []string{"wrong-command"},
+			expectedMessage: "generate [global options] <command> [command options]",
+			expectedError:   "Invalid command: wrong-command",
+		},
+		{
+			testName:        "wrong uuid version",
+			args:            []string{"uuid", "-version", "99"},
+			expectedMessage: "generate uuid [-version uuid_version_number]",
+			expectedError:   "invalid value \"99\" for flag -version: UUID version should be '4' or '7' (default 4)",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.testName, func(t *testing.T) {
+			var buf bytes.Buffer
+			_, err := readOptions(tt.args, &buf)
+
+			require.Error(t, err)
+
+			assert.Equal(t, tt.expectedError, err.Error())
+
+			actualMessage := buf.String()
+			assert.True(t, strings.Contains(actualMessage, tt.expectedMessage), "Actual message: "+actualMessage)
+		})
+	}
+}
+
 func trueValuePointer() *bool {
 	result := new(bool)
 	*result = true
