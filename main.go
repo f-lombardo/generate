@@ -54,7 +54,7 @@ func (f *UuidVersion) Set(valore string) error {
 }
 
 type Options struct {
-	outputFormat *OutputFormat
+	outputFormat OutputFormat
 	clipboard    *bool
 	command      Command
 	otherArgs    map[string]string
@@ -82,17 +82,14 @@ func copyToClipboard(result string) error {
 
 func readOptions() (Options, error) {
 	options := Options{
-		outputFormat: new(OutputFormat),
-		clipboard:    new(bool),
-		otherArgs:    make(map[string]string),
+		clipboard: new(bool),
+		otherArgs: make(map[string]string),
 	}
 
 	options.clipboard = flag.Bool("clipboard", true, "Copies the results to the system clipboard. E.g. --clipboard=false")
 
-	*options.outputFormat = OutputFormat{
-		formatter: TabFormatter{},
-	}
-	flag.Var(options.outputFormat, "output", "Output format. Valid values: json, tab. Default value: tab")
+	options.outputFormat = defaultFormat()
+	flag.Var(&options.outputFormat, "output", "Output format. Valid values: json, tab. Default value: tab")
 
 	// iban subcommand
 	ibanCmd := flag.NewFlagSet("iban", flag.ExitOnError)
@@ -167,6 +164,12 @@ func readOptions() (Options, error) {
 	}
 
 	return options, nil
+}
+
+func defaultFormat() OutputFormat {
+	return OutputFormat{
+		formatter: TabFormatter{},
+	}
 }
 
 func main() {
