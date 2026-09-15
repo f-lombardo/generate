@@ -34,6 +34,26 @@ func TestParseGoodArgs(t *testing.T) {
 				otherArgs:    map[string]string{"version": "4"},
 			},
 		},
+		{
+			testName: "iban default values with global options",
+			args:     []string{"-clipboard=false", "-output", "json", "iban"},
+			expectedOptions: Options{
+				outputFormat: jsonFormat(),
+				clipboard:    falseValuePointer(),
+				command:      IbanCommand{},
+				otherArgs:    map[string]string{"country": "IT"},
+			},
+		},
+		{
+			testName: "uuid default values with global options",
+			args:     []string{"-clipboard=false", "-output", "json", "uuid"},
+			expectedOptions: Options{
+				outputFormat: jsonFormat(),
+				clipboard:    falseValuePointer(),
+				command:      UuidCommand{},
+				otherArgs:    map[string]string{"version": "4"},
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -48,6 +68,46 @@ func TestParseGoodArgs(t *testing.T) {
 	}
 }
 
+func TestHelpArgs(t *testing.T) {
+
+	tests := []struct {
+		testName        string
+		args            []string
+		expectedOptions Options
+	}{
+		{
+			testName: "global help",
+			args:     []string{"-help"},
+			expectedOptions: Options{
+				outputFormat: jsonFormat(),
+				clipboard:    falseValuePointer(),
+				command:      UuidCommand{},
+				otherArgs:    map[string]string{"version": "4"},
+			},
+		},
+		{
+			testName: "iban help",
+			args:     []string{"iban", "-help"},
+			expectedOptions: Options{
+				outputFormat: jsonFormat(),
+				clipboard:    falseValuePointer(),
+				command:      UuidCommand{},
+				otherArgs:    map[string]string{"version": "4"},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.testName, func(t *testing.T) {
+			_, err := readOptions(tt.args)
+
+			require.Error(t, err)
+
+			assert.Equal(t, "flag: help requested", err.Error())
+		})
+	}
+}
+
 func trueValuePointer() *bool {
 	result := new(bool)
 	*result = true
@@ -56,6 +116,6 @@ func trueValuePointer() *bool {
 
 func falseValuePointer() *bool {
 	result := new(bool)
-	*result = true
+	*result = false
 	return result
 }
