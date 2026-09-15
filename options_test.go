@@ -136,6 +136,12 @@ func TestWrongArgs(t *testing.T) {
 			expectedMessage: "generate uuid [-version uuid_version_number]",
 			expectedError:   "invalid value \"99\" for flag -version: UUID version should be '4' or '7' (default 4)",
 		},
+		{
+			testName:        "wrong iban option",
+			args:            []string{"iban", "-wrong-option"},
+			expectedMessage: "generate iban [-country COUNTRY_CODE]",
+			expectedError:   "flag provided but not defined: -wrong-option",
+		},
 	}
 
 	for _, tt := range tests {
