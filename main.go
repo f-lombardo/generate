@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	opts, err := readOptions(os.Args[1:])
+	opts, err := readOptions(os.Args[1:], os.Stderr)
 	StopIf(err)
 
 	structResult, err := opts.command.Execute(opts.otherArgs)

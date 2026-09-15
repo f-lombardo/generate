@@ -1,6 +1,9 @@
 package main
 
 import (
+	"bytes"
+	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -58,7 +61,7 @@ func TestParseGoodArgs(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.testName, func(t *testing.T) {
-			options, err := readOptions(tt.args)
+			options, err := readOptions(tt.args, os.Stderr)
 
 			require.NoError(t, err)
 			require.NotNil(t, options)
@@ -73,37 +76,36 @@ func TestHelpArgs(t *testing.T) {
 	tests := []struct {
 		testName        string
 		args            []string
-		expectedOptions Options
+		expectedMessage string
 	}{
 		{
-			testName: "global help",
-			args:     []string{"-help"},
-			expectedOptions: Options{
-				outputFormat: jsonFormat(),
-				clipboard:    falseValuePointer(),
-				command:      UuidCommand{},
-				otherArgs:    map[string]string{"version": "4"},
-			},
+			testName:        "global help",
+			args:            []string{"-help"},
+			expectedMessage: "generate [global options] <command> [command options]",
 		},
 		{
-			testName: "iban help",
-			args:     []string{"iban", "-help"},
-			expectedOptions: Options{
-				outputFormat: jsonFormat(),
-				clipboard:    falseValuePointer(),
-				command:      UuidCommand{},
-				otherArgs:    map[string]string{"version": "4"},
-			},
+			testName:        "iban help",
+			args:            []string{"iban", "-help"},
+			expectedMessage: "generate iban [-country COUNTRY_CODE]",
+		},
+		{
+			testName:        "uuid help",
+			args:            []string{"uuid", "-help"},
+			expectedMessage: "generate uuid [-version uuid_version_number]",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.testName, func(t *testing.T) {
-			_, err := readOptions(tt.args)
+			var buf bytes.Buffer
+			_, err := readOptions(tt.args, &buf)
 
 			require.Error(t, err)
 
 			assert.Equal(t, "flag: help requested", err.Error())
+
+			actualMessage := buf.String()
+			assert.True(t, strings.Contains(actualMessage, tt.expectedMessage), "Actual message: "+actualMessage)
 		})
 	}
 }

@@ -4,22 +4,20 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"os"
+	"io"
 	"strings"
 )
 
-// 1. Definiamo un nuovo tipo stringa
 type OutputFormat struct {
 	formatter Formatter
 }
 
-// 2. Implementiamo il metodo String() (richiesto da flag.Value)
+// Required by flag.Value
 func (f *OutputFormat) String() string {
 	return fmt.Sprintf("%T", f)
 }
 
-// 3. Implementiamo il metodo Set() (richiesto da flag.Value)
-// È qui che avviene la validazione in tempo reale!
+// Required by flag.Value. Validation will be performed here
 func (f *OutputFormat) Set(valore string) error {
 	switch valore {
 	case "json":
@@ -56,53 +54,56 @@ type Options struct {
 	otherArgs    map[string]string
 }
 
-func readOptions(args []string) (Options, error) {
+// Passing nil to outputWriter is the same as passing os.Stderr
+func readOptions(args []string, outputWriter io.Writer) (Options, error) {
 	options := Options{
 		clipboard: new(bool),
 		otherArgs: make(map[string]string),
 	}
 
 	fs := flag.NewFlagSet("create", flag.ContinueOnError)
-
-	fs.ErrorHandling()
+	fs.SetOutput(outputWriter)
 
 	options.clipboard = fs.Bool("clipboard", true, "Copies the results to the system clipboard. E.g. --clipboard=false")
 
 	options.outputFormat = defaultFormat()
 	fs.Var(&options.outputFormat, "output", "Output format. Valid values: json, tab. Default value: tab")
 
+	// iban subcommand
 	ibanCmd := flag.NewFlagSet("iban", flag.ContinueOnError)
+	ibanCmd.SetOutput(outputWriter)
 	defaultCountry := "IT"
 	inputCountry := ibanCmd.String("country", defaultCountry, "IBAN country code (e.g. IT, ES, NL)")
 	ibanCmd.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage: generate iban [-country COUNTRY_CODE]\n\nOptions:\n")
+		fmt.Fprintf(ibanCmd.Output(), "Usage: generate iban [-country COUNTRY_CODE]\n\nOptions:\n")
 		ibanCmd.PrintDefaults()
 	}
 
 	// uuid subcommand
 	uuidCmd := flag.NewFlagSet("uuid", flag.ContinueOnError)
+	uuidCmd.SetOutput(outputWriter)
 	defaultVersion := "4"
 	uuidVersion := uuidCmd.String("version", defaultVersion, "UUID version (4 or 7)")
 	uuidCmd.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage: generate uuid [-version 7]\n\nOptions:\n")
+		fmt.Fprintf(ibanCmd.Output(), "Usage: generate uuid [-version uuid_version_number]\n\nOptions:\n")
 		uuidCmd.PrintDefaults()
 	}
 
 	fs.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage: generate [global options] <command> [command options]\n\n")
-		fmt.Fprintf(os.Stderr, "Global options:\n")
+		fmt.Fprintf(fs.Output(), "Usage: generate [global options] <command> [command options]\n\n")
+		fmt.Fprintf(fs.Output(), "Global options:\n")
 		fs.PrintDefaults()
-		fmt.Fprintf(os.Stderr, "\nAvailable commands:\n\n")
+		fmt.Fprintf(fs.Output(), "\nAvailable commands:\n\n")
 
-		fmt.Fprintf(os.Stderr, "  iban\tGenerates a valid IBAN\n")
-		fmt.Fprintf(os.Stderr, "  Command options:\n")
+		fmt.Fprintf(fs.Output(), "  iban\tGenerates a valid IBAN\n")
+		fmt.Fprintf(fs.Output(), "  Command options:\n")
 		ibanCmd.PrintDefaults()
-		fmt.Fprintf(os.Stderr, "\n")
+		fmt.Fprintf(fs.Output(), "\n")
 
-		fmt.Fprintf(os.Stderr, "  uuid\tGenerates a UUID v4 or v7\n")
-		fmt.Fprintf(os.Stderr, "  Command options:\n")
+		fmt.Fprintf(fs.Output(), "  uuid\tGenerates a UUID v4 or v7\n")
+		fmt.Fprintf(fs.Output(), "  Command options:\n")
 		uuidCmd.PrintDefaults()
-		fmt.Fprintf(os.Stderr, "\n")
+		fmt.Fprintf(fs.Output(), "\n")
 	}
 
 	if err := fs.Parse(args); err != nil {
