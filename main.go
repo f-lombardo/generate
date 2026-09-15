@@ -6,7 +6,11 @@ import (
 )
 
 func main() {
-	opts, err := readOptions(os.Args[1:], os.Stderr)
+	executeProgram(os.Stderr, os.Stdout)
+}
+
+func executeProgram(stderr *os.File, stdout *os.File) {
+	opts, err := readOptions(os.Args[1:], stderr)
 	StopIf(err)
 
 	structResult, err := opts.command.Execute(opts.otherArgs)
@@ -20,5 +24,5 @@ func main() {
 		StopIf(err)
 	}
 
-	fmt.Println(result)
+	fmt.Fprintln(stdout, result)
 }
