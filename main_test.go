@@ -14,7 +14,7 @@ import (
 
 const previousClipboardData = "previous clipboard data"
 
-func TestGoodExecutions(t *testing.T) {
+func TestGoodProgramExecutions(t *testing.T) {
 
 	tests := []struct {
 		testName       string
@@ -153,7 +153,7 @@ func TestGoodExecutions(t *testing.T) {
 	}
 }
 
-func TestWrongExecutions(t *testing.T) {
+func TestWrongProgramExecutions(t *testing.T) {
 
 	tests := []struct {
 		testName        string
