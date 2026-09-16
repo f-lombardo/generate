@@ -1,3 +1,5 @@
+![coverage](https://raw.githubusercontent.com/f-lombardo/generate/badges/.badges/master/coverage.svg)
+
 # generate
 
 `generate` is a command-line interface (CLI) tool written in Go for quickly generating sample and test data such as IBAN numbers and UUIDs. It is designed to fit seamlessly into developer workflows by automatically copying generated output directly to the system clipboard.
