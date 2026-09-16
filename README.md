@@ -1,4 +1,4 @@
-[![test](https://github.com/f-lombardo/generate/actions/workflows/go.yml/badge.svg?branch=master)](https://github.com/f-lombardo/generate/actions/workflows/go.yml)
+[![test](https://github.com/f-lombardo/generate/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/f-lombardo/generate/actions/workflows/tests.yml)
 ![coverage](https://raw.githubusercontent.com/f-lombardo/generate/badges/.badges/master/coverage.svg)
 
 # generate
