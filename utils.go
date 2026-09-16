@@ -26,7 +26,9 @@ func copyToClipboard(s string) error {
 	defer cancel()
 
 	ch, err := clipboard.Write(ctx, clipboard.FmtText, []byte(s))
-	StopIf(err)
+	if err != nil {
+		return err
+	}
 
 	select {
 	case <-ch:
@@ -34,4 +36,25 @@ func copyToClipboard(s string) error {
 	}
 
 	return nil
+}
+
+func readFromClipboard() (string, error) {
+	err := clipboard.Init()
+	if err != nil {
+		return "", err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+
+	b, err := clipboard.Read(context.Background(), clipboard.FmtText)
+	if err != nil {
+		return "", err
+	}
+
+	select {
+	case <-ctx.Done():
+	}
+
+	return string(b), nil
 }
