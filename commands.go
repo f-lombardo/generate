@@ -45,9 +45,9 @@ func (r UUIDResult) String() string {
 	return r.UUID
 }
 
-type UuidCommand struct{}
+type UUIDCommand struct{}
 
-func (cmd UuidCommand) Execute(otherArgs map[string]string) (fmt.Stringer, error) {
+func (cmd UUIDCommand) Execute(otherArgs map[string]string) (fmt.Stringer, error) {
 	switch otherArgs["version"] {
 	case "4":
 		code, err := uuid.NewRandom()

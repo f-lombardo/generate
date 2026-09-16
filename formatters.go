@@ -9,10 +9,10 @@ type Formatter interface {
 	Format(structResult fmt.Stringer) (string, error)
 }
 
-type JsonFormatter struct {
+type JSONFormatter struct {
 }
 
-func (j JsonFormatter) Format(structResult fmt.Stringer) (string, error) {
+func (j JSONFormatter) Format(structResult fmt.Stringer) (string, error) {
 	result, err := json.Marshal(structResult)
 	StopIf(err)
 	return string(result), nil

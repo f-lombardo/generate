@@ -33,7 +33,7 @@ func TestParseGoodArgs(t *testing.T) {
 			expectedOptions: Options{
 				outputFormat: defaultFormat(),
 				clipboard:    trueValuePointer(),
-				command:      UuidCommand{},
+				command:      UUIDCommand{},
 				otherArgs:    map[string]string{"version": "4"},
 			},
 		},
@@ -53,7 +53,7 @@ func TestParseGoodArgs(t *testing.T) {
 			expectedOptions: Options{
 				outputFormat: jsonFormat(),
 				clipboard:    falseValuePointer(),
-				command:      UuidCommand{},
+				command:      UUIDCommand{},
 				otherArgs:    map[string]string{"version": "4"},
 			},
 		},

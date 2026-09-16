@@ -17,11 +17,11 @@ func (f *OutputFormat) String() string {
 	return fmt.Sprintf("%T", f)
 }
 
-// Required by flag.Value. Validation will be performed here
+// Set Required by flag.Value. Validation will be performed here
 func (f *OutputFormat) Set(valore string) error {
 	switch valore {
 	case "json":
-		f.formatter = JsonFormatter{}
+		f.formatter = JSONFormatter{}
 		return nil
 	case "tab":
 		f.formatter = TabFormatter{}
@@ -31,16 +31,16 @@ func (f *OutputFormat) Set(valore string) error {
 	}
 }
 
-type UuidVersion string
+type UUIDVersion string
 
-func (f *UuidVersion) String() string {
+func (f *UUIDVersion) String() string {
 	return string(*f)
 }
 
-func (f *UuidVersion) Set(valore string) error {
+func (f *UUIDVersion) Set(valore string) error {
 	switch valore {
 	case "4", "7":
-		*f = UuidVersion(valore)
+		*f = UUIDVersion(valore)
 		return nil
 	default:
 		return errors.New("UUID version should be '4' or '7' (default 4)")
@@ -83,7 +83,7 @@ func readOptions(args []string, outputWriter io.Writer) (Options, error) {
 	uuidCmd := flag.NewFlagSet("uuid", flag.ContinueOnError)
 	uuidCmd.SetOutput(outputWriter)
 	defaultVersion := "4"
-	uuidVersion := UuidVersion(defaultVersion)
+	uuidVersion := UUIDVersion(defaultVersion)
 	uuidCmd.Var(&uuidVersion, "version", "UUID version (4 or 7)")
 	uuidCmd.Usage = func() {
 		fmt.Fprintf(ibanCmd.Output(), "Usage: generate uuid [-version uuid_version_number]\n\nOptions:\n")
@@ -139,7 +139,7 @@ func readOptions(args []string, outputWriter io.Writer) (Options, error) {
 		if err != nil {
 			return Options{}, err
 		}
-		options.command = UuidCommand{}
+		options.command = UUIDCommand{}
 		options.otherArgs["version"] = uuidVersion.String()
 
 	default:
@@ -158,6 +158,6 @@ func defaultFormat() OutputFormat {
 
 func jsonFormat() OutputFormat {
 	return OutputFormat{
-		formatter: JsonFormatter{},
+		formatter: JSONFormatter{},
 	}
 }
