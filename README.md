@@ -1,6 +1,6 @@
 [![test](https://github.com/f-lombardo/generate/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/f-lombardo/generate/actions/workflows/tests.yml)
-[![govulnchecks](https://github.com/f-lombardo/generate/actions/workflows/govulnchecks.yml/badge.svg?branch=master)](https://github.com/f-lombardo/generate/actions/workflows/govulnchecks.yml)
 ![coverage](https://raw.githubusercontent.com/f-lombardo/generate/badges/.badges/master/coverage.svg)
+[![govulnchecks](https://github.com/f-lombardo/generate/actions/workflows/govulnchecks.yml/badge.svg?branch=master)](https://github.com/f-lombardo/generate/actions/workflows/govulnchecks.yml)
 
 # generate
 
