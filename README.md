@@ -4,7 +4,7 @@
 
 # generate
 
-`generate` is a command-line interface (CLI) tool written in Go for quickly generating sample and test data such as IBAN numbers and UUIDs. It is designed to fit seamlessly into developer workflows by automatically copying generated output directly to the system clipboard.
+`generate` is a command-line interface (CLI) tool written in Go for quickly generating sample and test data such as IBAN numbers, UUIDs, and random passwords. It is designed to fit seamlessly into developer workflows by automatically copying generated output directly to the system clipboard.
 
 ---
 
@@ -12,6 +12,7 @@
 
 - **IBAN Generation**: Generates valid IBAN numbers for various supported countries (e.g., Italy `IT`, Spain `ES`, Netherlands `NL`, etc.).
 - **UUID Generation**: Supports generating both Version 4 (random) and Version 7 (time-ordered) UUIDs.
+- **Password Generation**: Generates random passwords with customizable length.
 - **Clipboard Integration**: Automatically copies generated values to the system clipboard (can be disabled via flag).
 - **Flexible Output Formats**: Supports plain text (`tab`) and JSON (`json`) output.
 
@@ -90,6 +91,24 @@ generate uuid -version 7
 
 # Generate a UUID v4 in JSON format
 generate -output json uuid
+```
+
+### 3. `password`
+Generates a random password.
+
+**Command Options:**
+- `-length` *(int, default: `14`)*: Length of the password (minimum `4`).
+
+**Examples:**
+```bash
+# Generate a random password of default length (14)
+generate password
+
+# Generate a password with custom length of 20
+generate password -length 20
+
+# Generate a password in JSON format
+generate -output json password
 ```
 
 ---
