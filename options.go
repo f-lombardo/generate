@@ -118,7 +118,7 @@ func readOptions(args []string, outputWriter io.Writer) (Options, error) {
 	passwordLength := PasswordLength(defaultLength)
 	passwordCmd.Var(&passwordLength, "length", "length of the password (min 4)")
 	passwordCmd.Usage = func() {
-		fmt.Fprintf(ibanCmd.Output(), "Usage: generate password [-length n]\n\nOptions:\n")
+		fmt.Fprintf(passwordCmd.Output(), "Usage: generate password [-length n]\n\nOptions:\n")
 		passwordCmd.PrintDefaults()
 	}
 
@@ -185,8 +185,8 @@ func readOptions(args []string, outputWriter io.Writer) (Options, error) {
 		if err != nil {
 			return Options{}, err
 		}
-		options.command = UUIDCommand{}
-		options.otherArgs["version"] = uuidVersion.String()
+		options.command = PasswordCommand{}
+		options.otherArgs["length"] = passwordLength.String()
 
 	default:
 		fs.Usage()
