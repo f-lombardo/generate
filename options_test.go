@@ -150,9 +150,15 @@ func TestWrongArgs(t *testing.T) {
 		},
 		{
 			testName:        "wrong length option",
-			args:            []string{"password", "-length", "not-a-numer"},
+			args:            []string{"password", "-length", "not-a-number"},
 			expectedMessage: "generate password [-length n]",
-			expectedError:   "invalid value \"not-a-numer\" for flag -length: strconv.Atoi: parsing \"not-a-numer\": invalid syntax",
+			expectedError:   "invalid value \"not-a-number\" for flag -length: strconv.Atoi: parsing \"not-a-number\": invalid syntax",
+		},
+		{
+			testName:        "small length option",
+			args:            []string{"password", "-length", "1"},
+			expectedMessage: "generate password [-length n]",
+			expectedError:   "invalid value \"1\" for flag -length: Invalid length: 1",
 		},
 	}
 
