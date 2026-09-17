@@ -129,6 +129,34 @@ func TestGoodProgramExecutions(t *testing.T) {
 				return nil
 			},
 		},
+		{
+			testName: "password default values",
+			args:     []string{"password"},
+			outputVerifier: func(s string) error {
+				actualResultWithoutNewLine := strings.TrimSuffix(s, "\n")
+				assert.Empty(t, actualResultWithoutNewLine)
+				actualClipboardData, err := readFromClipboard()
+				if err != nil {
+					return err
+				}
+				assert.Equal(t, 14, len(actualClipboardData))
+				return nil
+			},
+		},
+		{
+			testName: "password with length value",
+			args:     []string{"password", "-length", "5"},
+			outputVerifier: func(s string) error {
+				actualResultWithoutNewLine := strings.TrimSuffix(s, "\n")
+				assert.Empty(t, actualResultWithoutNewLine)
+				actualClipboardData, err := readFromClipboard()
+				if err != nil {
+					return err
+				}
+				assert.Equal(t, 5, len(actualClipboardData))
+				return nil
+			},
+		},
 	}
 
 	for _, tt := range tests {

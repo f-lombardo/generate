@@ -142,6 +142,18 @@ func TestWrongArgs(t *testing.T) {
 			expectedMessage: "generate iban [-country COUNTRY_CODE]",
 			expectedError:   "flag provided but not defined: -wrong-option",
 		},
+		{
+			testName:        "wrong password option",
+			args:            []string{"password", "-wrong-option"},
+			expectedMessage: "generate password [-length n]",
+			expectedError:   "flag provided but not defined: -wrong-option",
+		},
+		{
+			testName:        "wrong length option",
+			args:            []string{"password", "-length", "not-a-numer"},
+			expectedMessage: "generate password [-length n]",
+			expectedError:   "invalid value \"not-a-numer\" for flag -length: strconv.Atoi: parsing \"not-a-numer\": invalid syntax",
+		},
 	}
 
 	for _, tt := range tests {
