@@ -102,14 +102,20 @@ func (cmd PasswordCommand) Execute(otherArgs map[string]string) (fmt.Stringer, e
 
 	charSets := [][]string{uppercaseLetters(), lowercaseLetters(), numbers(), symbols()}
 
+	numberOfCharSets := len(charSets)
+
+	if length < numberOfCharSets {
+		return nil, errors.New("Invalid length: " + otherArgs["length"])
+	}
+
 	var result strings.Builder
 
 	for _, charSet := range charSets {
 		result.WriteString(randomChar(charSet))
 	}
 
-	for i := 0; i < (length - len(charSets)); i++ {
-		randomCharset := rand.Intn(len(charSets))
+	for i := 0; i < (length - numberOfCharSets); i++ {
+		randomCharset := rand.Intn(numberOfCharSets)
 		result.WriteString(randomChar(charSets[randomCharset]))
 	}
 

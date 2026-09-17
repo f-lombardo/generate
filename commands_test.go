@@ -27,9 +27,26 @@ func TestRandomPassword(t *testing.T) {
 }
 
 func TestRandomPasswordGivesErrorForWrongParameter(t *testing.T) {
-	command := PasswordCommand{}
+	tests := []struct {
+		testName string
+		length   string
+	}{
+		{
+			testName: "length is not a number",
+			length:   "x",
+		},
+		{
+			testName: "length is too small",
+			length:   "x",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.testName, func(t *testing.T) {
+			command := PasswordCommand{}
 
-	_, err := command.Execute(map[string]string{"length": "x"})
+			_, err := command.Execute(map[string]string{"length": "x"})
 
-	require.Error(t, err)
+			require.Error(t, err)
+		})
+	}
 }
