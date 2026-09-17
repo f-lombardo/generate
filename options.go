@@ -39,16 +39,17 @@ func (l *PasswordLength) String() string {
 }
 
 func (l *PasswordLength) Set(valore string) error {
-	length, err := strconv.Atoi(string(*l))
+	length, err := strconv.Atoi(valore)
 	if err != nil {
 		return err
 	}
 	numberOfCharSets := 4
 
 	if length < numberOfCharSets {
-		return errors.New("Invalid length: " + string(*l))
+		return errors.New("Invalid length: " + valore)
 	}
 
+	*l = PasswordLength(valore)
 	return nil
 }
 
@@ -112,7 +113,7 @@ func readOptions(args []string, outputWriter io.Writer) (Options, error) {
 	}
 
 	// password subcommand
-	passwordCmd := flag.NewFlagSet("uuid", flag.ContinueOnError)
+	passwordCmd := flag.NewFlagSet("password", flag.ContinueOnError)
 	passwordCmd.SetOutput(outputWriter)
 	defaultLength := "14"
 	passwordLength := PasswordLength(defaultLength)
