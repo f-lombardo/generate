@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 )
 
@@ -29,6 +30,26 @@ func (f *OutputFormat) Set(valore string) error {
 	default:
 		return errors.New("output format must be 'json' o 'tab' (default)")
 	}
+}
+
+type PasswordLength string
+
+func (l *PasswordLength) String() string {
+	return string(*l)
+}
+
+func (l *PasswordLength) Set(valore string) error {
+	length, err := strconv.Atoi(string(*l))
+	if err != nil {
+		return err
+	}
+	numberOfCharSets := 4
+
+	if length < numberOfCharSets {
+		return errors.New("Invalid length: " + string(*l))
+	}
+
+	return nil
 }
 
 type UUIDVersion string
@@ -90,6 +111,17 @@ func readOptions(args []string, outputWriter io.Writer) (Options, error) {
 		uuidCmd.PrintDefaults()
 	}
 
+	// password subcommand
+	passwordCmd := flag.NewFlagSet("uuid", flag.ContinueOnError)
+	passwordCmd.SetOutput(outputWriter)
+	defaultLength := "14"
+	passwordLength := PasswordLength(defaultLength)
+	passwordCmd.Var(&passwordLength, "length", "length of the password (min 4)")
+	passwordCmd.Usage = func() {
+		fmt.Fprintf(ibanCmd.Output(), "Usage: generate password [-length n]\n\nOptions:\n")
+		passwordCmd.PrintDefaults()
+	}
+
 	fs.Usage = func() {
 		fmt.Fprintf(fs.Output(), "Usage: generate [global options] <command> [command options]\n\n")
 		fmt.Fprintf(fs.Output(), "Global options:\n")
@@ -104,6 +136,11 @@ func readOptions(args []string, outputWriter io.Writer) (Options, error) {
 		fmt.Fprintf(fs.Output(), "  uuid\tGenerates a UUID v4 or v7\n")
 		fmt.Fprintf(fs.Output(), "  Command options:\n")
 		uuidCmd.PrintDefaults()
+		fmt.Fprintf(fs.Output(), "\n")
+
+		fmt.Fprintf(fs.Output(), "  password\tGenerates a random password\n")
+		fmt.Fprintf(fs.Output(), "  Command options:\n")
+		passwordCmd.PrintDefaults()
 		fmt.Fprintf(fs.Output(), "\n")
 	}
 
@@ -136,6 +173,15 @@ func readOptions(args []string, outputWriter io.Writer) (Options, error) {
 	case "uuid":
 		// Passiamo al sotto-comando tutti gli argomenti che vengono DOPO di lui
 		err := uuidCmd.Parse(remainingArgs[1:])
+		if err != nil {
+			return Options{}, err
+		}
+		options.command = UUIDCommand{}
+		options.otherArgs["version"] = uuidVersion.String()
+
+	case "password":
+		// Passiamo al sotto-comando tutti gli argomenti che vengono DOPO di lui
+		err := passwordCmd.Parse(remainingArgs[1:])
 		if err != nil {
 			return Options{}, err
 		}
