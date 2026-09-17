@@ -107,7 +107,7 @@ func readOptions(args []string, outputWriter io.Writer) (Options, error) {
 	uuidVersion := UUIDVersion(defaultVersion)
 	uuidCmd.Var(&uuidVersion, "version", "UUID version (4 or 7)")
 	uuidCmd.Usage = func() {
-		fmt.Fprintf(ibanCmd.Output(), "Usage: generate uuid [-version uuid_version_number]\n\nOptions:\n")
+		fmt.Fprintf(uuidCmd.Output(), "Usage: generate uuid [-version uuid_version_number]\n\nOptions:\n")
 		uuidCmd.PrintDefaults()
 	}
 
@@ -148,8 +148,8 @@ func readOptions(args []string, outputWriter io.Writer) (Options, error) {
 		return Options{}, err
 	}
 
-	// fs.Args() restituisce i parametri rimasti dopo aver tolto i flag globali.
-	// Il primo elemento rimasto DOVREBBE essere il nostro sotto-comando.
+	// fs.Args() Returns the remaining parameters after removing the global flags.
+	// The first remaining element should be our subcommand.
 	remainingArgs := fs.Args()
 
 	if len(remainingArgs) < 1 {
@@ -159,10 +159,8 @@ func readOptions(args []string, outputWriter io.Writer) (Options, error) {
 
 	subcommand := remainingArgs[0]
 
-	// iban subcommand
 	switch subcommand {
 	case "iban":
-		// Passiamo al sotto-comando tutti gli argomenti che vengono DOPO di lui
 		err := ibanCmd.Parse(remainingArgs[1:])
 		if err != nil {
 			return Options{}, err
@@ -171,7 +169,6 @@ func readOptions(args []string, outputWriter io.Writer) (Options, error) {
 		options.otherArgs["country"] = strings.ToUpper(*inputCountry)
 
 	case "uuid":
-		// Passiamo al sotto-comando tutti gli argomenti che vengono DOPO di lui
 		err := uuidCmd.Parse(remainingArgs[1:])
 		if err != nil {
 			return Options{}, err
@@ -180,7 +177,6 @@ func readOptions(args []string, outputWriter io.Writer) (Options, error) {
 		options.otherArgs["version"] = uuidVersion.String()
 
 	case "password":
-		// Passiamo al sotto-comando tutti gli argomenti che vengono DOPO di lui
 		err := passwordCmd.Parse(remainingArgs[1:])
 		if err != nil {
 			return Options{}, err

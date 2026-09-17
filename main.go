@@ -34,7 +34,9 @@ func executeProgram(args []string, stdout io.Writer, stderr io.Writer) error {
 		}
 	}
 
-	fmt.Fprintln(stdout, result)
+	if !opts.command.DiscardOutput() {
+		fmt.Fprintln(stdout, result)
+	}
 
 	return nil
 }

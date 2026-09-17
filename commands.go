@@ -13,6 +13,7 @@ import (
 
 type Command interface {
 	Execute(otherArgs map[string]string) (fmt.Stringer, error)
+	DiscardOutput() bool
 }
 
 // IbanCommand ------------------------------------------------------------------------
@@ -36,6 +37,10 @@ func (cmd IbanCommand) Execute(otherArgs map[string]string) (fmt.Stringer, error
 	return IbanResult{
 		IBAN: code,
 	}, nil
+}
+
+func (cmd IbanCommand) DiscardOutput() bool {
+	return false
 }
 
 // Uuid command ------------------------------------------------------------------------
@@ -71,6 +76,10 @@ func (cmd UUIDCommand) Execute(otherArgs map[string]string) (fmt.Stringer, error
 	default:
 		return nil, errors.New("Invalid version: " + otherArgs["version"])
 	}
+}
+
+func (cmd UUIDCommand) DiscardOutput() bool {
+	return false
 }
 
 // Password command ------------------------------------------------------------------------
@@ -120,6 +129,10 @@ func (cmd PasswordCommand) Execute(otherArgs map[string]string) (fmt.Stringer, e
 	}
 
 	return PasswordResult{shuffle(result.String())}, nil
+}
+
+func (cmd PasswordCommand) DiscardOutput() bool {
+	return true
 }
 
 func randomChar(charSet []string) string {
