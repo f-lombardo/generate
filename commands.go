@@ -3,6 +3,9 @@ package main
 import (
 	"errors"
 	"fmt"
+	"math/rand"
+	"strconv"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/jacoelho/banking/iban"
@@ -68,4 +71,86 @@ func (cmd UUIDCommand) Execute(otherArgs map[string]string) (fmt.Stringer, error
 	default:
 		return nil, errors.New("Invalid version: " + otherArgs["version"])
 	}
+}
+
+// Password command ------------------------------------------------------------------------
+
+type PasswordResult struct {
+	Password string
+}
+
+func (p PasswordResult) String() string {
+	return p.Password
+}
+
+func (p PasswordResult) ContainsOneOf(charSet []string) bool {
+	for _, char := range charSet {
+		if strings.Contains(p.Password, char) {
+			return true
+		}
+	}
+	return false
+}
+
+type PasswordCommand struct{}
+
+func (cmd PasswordCommand) Execute(otherArgs map[string]string) (fmt.Stringer, error) {
+	length, err := strconv.Atoi(otherArgs["length"])
+	if err != nil {
+		return nil, err
+	}
+
+	charSets := [][]string{uppercaseLetters(), lowercaseLetters(), numbers(), symbols()}
+
+	var result strings.Builder
+
+	for _, charSet := range charSets {
+		result.WriteString(randomChar(charSet))
+	}
+
+	for i := 0; i < (length - len(charSets)); i++ {
+		randomCharset := rand.Intn(len(charSets))
+		result.WriteString(randomChar(charSets[randomCharset]))
+	}
+
+	return PasswordResult{shuffle(result.String())}, nil
+}
+
+func randomChar(charSet []string) string {
+	randomIndex := rand.Intn(len(charSet))
+	return charSet[randomIndex]
+}
+
+func symbols() []string {
+	return enumerateASCIIChars(6, '!')
+}
+
+func lowercaseLetters() []string {
+	return enumerateASCIIChars(26, 'a')
+}
+
+func uppercaseLetters() []string {
+	return enumerateASCIIChars(26, 'A')
+}
+
+func numbers() []string {
+	return enumerateASCIIChars(10, '0')
+}
+
+func enumerateASCIIChars(numberOfChars int, startingChar rune) []string {
+	letters := make([]string, numberOfChars)
+
+	for i := range numberOfChars {
+		letters[i] = string(rune(int(startingChar) + i))
+	}
+
+	return letters
+}
+
+func shuffle(s string) string {
+	inRune := []rune(s)
+	rand.Shuffle(len(inRune), func(i, j int) {
+		inRune[i], inRune[j] = inRune[j], inRune[i]
+	})
+	return string(inRune)
 }
