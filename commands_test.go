@@ -28,25 +28,29 @@ func TestRandomPassword(t *testing.T) {
 
 func TestRandomPasswordGivesErrorForWrongParameter(t *testing.T) {
 	tests := []struct {
-		testName string
-		length   string
+		testName      string
+		length        string
+		expectedError string
 	}{
 		{
-			testName: "length is not a number",
-			length:   "x",
+			testName:      "length is not a number",
+			length:        "x",
+			expectedError: `strconv.Atoi: parsing "x": invalid syntax`,
 		},
 		{
-			testName: "length is too small",
-			length:   "x",
+			testName:      "length is too small",
+			length:        "2",
+			expectedError: "Invalid length: 2",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.testName, func(t *testing.T) {
 			command := PasswordCommand{}
 
-			_, err := command.Execute(map[string]string{"length": "x"})
+			_, err := command.Execute(map[string]string{"length": tt.length})
 
 			require.Error(t, err)
+			assert.Equal(t, tt.expectedError, err.Error())
 		})
 	}
 }
