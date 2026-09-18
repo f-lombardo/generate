@@ -71,8 +71,6 @@ func getGitHash() string {
 		switch s.Key {
 		case "vcs.revision", "vcs.time":
 			result.WriteString(s.Value + " ")
-		case "vcs.modified":
-			result.WriteString("modified: " + s.Value + " ")
 		}
 	}
 	return result.String()
