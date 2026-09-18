@@ -1,11 +1,11 @@
 #!/bin/bash
 
 ########################################################################################################################
-# This script tags a new version
+# This script removes a tags version
 ########################################################################################################################
 
 if [[ $# -ne 1 ]]; then
-    echo 'This script tags a new version' >&2
+    echo 'This script removes a tags version' >&2
     echo 'Usage: ' >&2
     echo "$0 x.y.z" >&2
     echo "where x.y.z is the new semantic version" >&2
