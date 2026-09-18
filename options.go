@@ -72,6 +72,7 @@ func (f *UUIDVersion) Set(valore string) error {
 type Options struct {
 	outputFormat OutputFormat
 	clipboard    *bool
+	version      *bool
 	command      Command
 	otherArgs    map[string]string
 }
@@ -80,11 +81,14 @@ type Options struct {
 func readOptions(args []string, outputWriter io.Writer) (Options, error) {
 	options := Options{
 		clipboard: new(bool),
+		version:   new(bool),
 		otherArgs: make(map[string]string),
 	}
 
 	fs := flag.NewFlagSet("create", flag.ContinueOnError)
 	fs.SetOutput(outputWriter)
+
+	options.version = fs.Bool("version", false, "Prints current version and exits")
 
 	options.clipboard = fs.Bool("clipboard", true, "Copies the results to the system clipboard. E.g. --clipboard=false")
 
@@ -154,6 +158,9 @@ func readOptions(args []string, outputWriter io.Writer) (Options, error) {
 	remainingArgs := fs.Args()
 
 	if len(remainingArgs) < 1 {
+		if *options.version {
+			return options, nil
+		}
 		fs.Usage()
 		return Options{}, errors.New("no command specified")
 	}

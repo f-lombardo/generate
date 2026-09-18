@@ -23,6 +23,7 @@ func TestParseGoodArgs(t *testing.T) {
 			expectedOptions: Options{
 				outputFormat: defaultFormat(),
 				clipboard:    trueValuePointer(),
+				version:      falseValuePointer(),
 				command:      IbanCommand{},
 				otherArgs:    map[string]string{"country": "IT"},
 			},
@@ -33,6 +34,7 @@ func TestParseGoodArgs(t *testing.T) {
 			expectedOptions: Options{
 				outputFormat: defaultFormat(),
 				clipboard:    trueValuePointer(),
+				version:      falseValuePointer(),
 				command:      UUIDCommand{},
 				otherArgs:    map[string]string{"version": "4"},
 			},
@@ -43,6 +45,7 @@ func TestParseGoodArgs(t *testing.T) {
 			expectedOptions: Options{
 				outputFormat: jsonFormat(),
 				clipboard:    falseValuePointer(),
+				version:      falseValuePointer(),
 				command:      IbanCommand{},
 				otherArgs:    map[string]string{"country": "IT"},
 			},
@@ -53,8 +56,20 @@ func TestParseGoodArgs(t *testing.T) {
 			expectedOptions: Options{
 				outputFormat: jsonFormat(),
 				clipboard:    falseValuePointer(),
+				version:      falseValuePointer(),
 				command:      UUIDCommand{},
 				otherArgs:    map[string]string{"version": "4"},
+			},
+		},
+		{
+			testName: "version flag",
+			args:     []string{"-version"},
+			expectedOptions: Options{
+				outputFormat: defaultFormat(),
+				clipboard:    trueValuePointer(),
+				version:      trueValuePointer(),
+				command:      nil,
+				otherArgs:    map[string]string{},
 			},
 		},
 	}

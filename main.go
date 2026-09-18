@@ -6,6 +6,10 @@ import (
 	"os"
 )
 
+var (
+	version = "dev"
+)
+
 func main() {
 	err := executeProgram(os.Args[1:], os.Stdout, os.Stderr)
 	StopIf(err)
@@ -15,6 +19,11 @@ func executeProgram(args []string, stdout io.Writer, stderr io.Writer) error {
 	opts, err := readOptions(args, stderr)
 	if err != nil {
 		return err
+	}
+
+	if *opts.version {
+		fmt.Fprintln(stdout, "Version "+version+" - git infos "+getGitHash())
+		return nil
 	}
 
 	structResult, err := opts.command.Execute(opts.otherArgs)

@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"runtime/debug"
+	"strings"
 	"time"
 
 	"golang.design/x/clipboard"
@@ -57,4 +59,21 @@ func readFromClipboard() (string, error) {
 	}
 
 	return string(b), nil
+}
+
+func getGitHash() string {
+	info, available := debug.ReadBuildInfo()
+	if !available {
+		return ""
+	}
+	var result strings.Builder
+	for _, s := range info.Settings {
+		switch s.Key {
+		case "vcs.revision", "vcs.time":
+			result.WriteString(s.Value + " ")
+		case "vcs.modified":
+			result.WriteString("modified: " + s.Value + " ")
+		}
+	}
+	return result.String()
 }

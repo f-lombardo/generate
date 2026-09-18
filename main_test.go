@@ -157,6 +157,15 @@ func TestGoodProgramExecutions(t *testing.T) {
 				return nil
 			},
 		},
+		{
+			testName: "version",
+			args:     []string{"-version"},
+			outputVerifier: func(s string) error {
+				actualResultWithoutNewLine := strings.TrimSuffix(s, "\n")
+				assert.True(t, strings.HasPrefix(actualResultWithoutNewLine, "Version "+version), "Wrong vesion: "+actualResultWithoutNewLine)
+				return nil
+			},
+		},
 	}
 
 	for _, tt := range tests {
