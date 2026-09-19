@@ -25,11 +25,23 @@ generated output directly to the system clipboard.
 
 ## 📦 Installation & Build
 
-### Prerequisites
+### Installing with Homebrew
 
-- [Go](https://golang.org/) 1.27 or higher.
+```bash
+# 1. Add repository (Tap)
+brew tap f-lombardo/tools
+
+# 2. Trust the generate formula (needed by Homebrew 6.0+)
+brew trust --formula f-lombardo/tools/generate
+
+# 3. Install the program
+brew install generate
+```
+
 
 ### Building from Source
+
+([Go](https://golang.org/) 1.27 or higher is required.)
 
 Clone the repository and build the binary using:
 
@@ -44,7 +56,11 @@ anywhere:
 mv generate /usr/local/bin/
 ```
 
----
+### Installing with go install
+
+```bash
+go install github.com/f-lombardo/generate
+```
 
 ## 🛠 Usage
 

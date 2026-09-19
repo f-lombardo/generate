@@ -14,4 +14,6 @@ fi
 
 git checkout master || exit 1
 
-git tag -d $1 && git push origin --delete $1
+gh release delete $1 --cleanup-tag
+git tag -d $1
+git push origin --delete $1
