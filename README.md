@@ -131,8 +131,7 @@ generate -output json password
 
 ---
 
-### 1
-4. `vat`
+### 4. `vat`
 
 Generates a syntactically valid VAT number.
 
