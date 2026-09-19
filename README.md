@@ -59,7 +59,7 @@ mv generate /usr/local/bin/
 ### Installing with go install
 
 ```bash
-go install github.com/f-lombardo/generate
+go install github.com/f-lombardo/generate@latest
 ```
 
 ## 🛠 Usage
