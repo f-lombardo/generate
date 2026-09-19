@@ -127,6 +127,15 @@ func readOptions(args []string, outputWriter io.Writer) (Options, error) {
 		passwordCmd.PrintDefaults()
 	}
 
+	// vat subcommand
+	vatCmd := flag.NewFlagSet("vat", flag.ContinueOnError)
+	vatCmd.SetOutput(outputWriter)
+	vatInputCountry := vatCmd.String("country", defaultCountry, "VAT code country code (e.g. IT, ES, NL) (Only IT is supported at this time)")
+	vatCmd.Usage = func() {
+		fmt.Fprintf(vatCmd.Output(), "Usage: generate vat [-country COUNTRY_CODE]\n\nOptions:\n")
+		vatCmd.PrintDefaults()
+	}
+
 	fs.Usage = func() {
 		fmt.Fprintf(fs.Output(), "Usage: generate [global options] <command> [command options]\n\n")
 		fmt.Fprintf(fs.Output(), "Global options:\n")
@@ -146,6 +155,11 @@ func readOptions(args []string, outputWriter io.Writer) (Options, error) {
 		fmt.Fprintf(fs.Output(), "  password\tGenerates a random password\n")
 		fmt.Fprintf(fs.Output(), "  Command options:\n")
 		passwordCmd.PrintDefaults()
+		fmt.Fprintf(fs.Output(), "\n")
+
+		fmt.Fprintf(fs.Output(), "  vat\tGenerates a valid VAT number\n")
+		fmt.Fprintf(fs.Output(), "  Command options:\n")
+		vatCmd.PrintDefaults()
 		fmt.Fprintf(fs.Output(), "\n")
 	}
 
@@ -191,6 +205,14 @@ func readOptions(args []string, outputWriter io.Writer) (Options, error) {
 		}
 		options.command = PasswordCommand{}
 		options.otherArgs["length"] = passwordLength.String()
+
+	case "vat":
+		err := vatCmd.Parse(remainingArgs[1:])
+		if err != nil {
+			return Options{}, err
+		}
+		options.command = VatCommand{}
+		options.otherArgs["country"] = strings.ToUpper(*vatInputCountry)
 
 	default:
 		fs.Usage()

@@ -14,6 +14,8 @@ generated output directly to the system clipboard.
 
 - **IBAN Generation**: Generates valid IBAN numbers for various supported countries (e.g., Italy `IT`, Spain `ES`,
   Netherlands `NL`, etc.).
+- **VAT Generation**: Generates valid VAT numbers for various supported countries (e.g., Italy `IT`, Spain `ES`,
+  Netherlands `NL`, etc.). **Only IT is supported at this time.**
 - **UUID Generation**: Supports generating both Version 4 (random) and Version 7 (time-ordered) UUIDs.
 - **Password Generation**: Generates random passwords with customizable length.
 - **Clipboard Integration**: Automatically copies generated values to the system clipboard (can be disabled via flag).
@@ -128,6 +130,29 @@ generate -output json password
 ```
 
 ---
+
+### 1
+4. `vat`
+
+Generates a syntactically valid VAT number.
+
+**Command Options:**
+
+- `-country` *(string, default: `IT`)*: ISO 3166-1 alpha-2 country code (e.g., `IT`, `ES`, `DE`, `FR`, `NL`).
+**Only IT is supported at this tim.e**
+
+**Examples:**
+
+```bash
+# Generate an Italian VAT number and copy it to clipboard
+generate VAT
+
+# Generate an Italian VAT number and copy it to clipboard
+generate iban -country IT
+
+# Format output as JSON
+generate -output json vat -country IT
+```
 
 ## 💡 Advanced Examples
 

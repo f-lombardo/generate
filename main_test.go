@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -163,6 +164,16 @@ func TestGoodProgramExecutions(t *testing.T) {
 			outputVerifier: func(s string) error {
 				actualResultWithoutNewLine := strings.TrimSuffix(s, "\n")
 				assert.True(t, strings.HasPrefix(actualResultWithoutNewLine, "Version "+version), "Wrong vesion: "+actualResultWithoutNewLine)
+				return nil
+			},
+		},
+		{
+			testName: "vat default values",
+			args:     []string{"vat"},
+			outputVerifier: func(s string) error {
+				actualResultWithoutNewLine := strings.TrimSuffix(s, "\n")
+				re := regexp.MustCompile(`^\d{11}$`)
+				assert.True(t, re.MatchString(actualResultWithoutNewLine), "Wrong VAT number: "+actualResultWithoutNewLine)
 				return nil
 			},
 		},
