@@ -6,3 +6,15 @@ builds:
     targets: [go_first_class]
     ldflags:
       - "-s -w -X main.version={{ .Version }}"
+
+brews:
+  - name: generate
+    repository:
+      owner: f-lombardo
+      name: homebrew-tools
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+
+    folder: Formula
+
+    homepage: "https://github.com/f-lombardo/generate"
+    description: "generate is a CLI tool for quickly generating test data such as IBAN numbers, UUIDs, VAT numbers and random passwords"
