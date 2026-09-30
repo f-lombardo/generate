@@ -4,7 +4,7 @@ go 1.27.1
 
 require (
 	github.com/google/uuid v1.6.0
-	github.com/jacoelho/banking v1.12.0
+	github.com/jacoelho/banking v1.13.0
 	github.com/stretchr/testify v1.12.1
 	golang.design/x/clipboard v0.9.0
 )
