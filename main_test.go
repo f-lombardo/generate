@@ -179,6 +179,15 @@ func TestGoodProgramExecutions(t *testing.T) {
 				return nil
 			},
 		},
+		{
+			testName: "person default values",
+			args:     []string{"person"},
+			outputVerifier: func(s string) error {
+				actualResultWithoutNewLine := strings.TrimSuffix(s, "\n")
+				assert.True(t, strings.Contains(actualResultWithoutNewLine, "Fiscal Code:"), "Output does not contain Fiscal Code: "+actualResultWithoutNewLine)
+				return nil
+			},
+		},
 	}
 
 	for _, tt := range tests {

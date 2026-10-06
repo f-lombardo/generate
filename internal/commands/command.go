@@ -25,6 +25,7 @@ func AllCliSubcommands() []CliSubcommand {
 		UUIDCliSubcommand{},
 		PasswordCliSubcommand{},
 		VatCliSubcommand{},
+		PersonCliSubcommand{},
 	}
 }
 

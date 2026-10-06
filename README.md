@@ -175,6 +175,26 @@ generate vat -country IT
 generate -output json vat -country IT
 ```
 
+---
+
+### 5. `person`
+
+Generates data for a fake person (first name, last name, gender, birth date, place of birth) and computes a valid Italian Fiscal Code (*Codice Fiscale*).
+
+**Command Options:**
+
+- `-country` *(string, default: `IT`)*: ISO 3166-1 alpha-2 country code. **Only IT is supported at this time.**
+
+**Examples:**
+
+```bash
+# Generate fake Italian person data with valid Codice Fiscale
+generate person
+
+# Format output as JSON
+generate -output json person
+```
+
 ## 💡 Advanced Examples
 
 - **Generate an IBAN without copying to clipboard:**
