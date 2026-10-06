@@ -2,11 +2,34 @@ package commands
 
 import (
 	"errors"
+	"flag"
 	"fmt"
+	"io"
 	"math/rand"
 	"strconv"
 	"strings"
 )
+
+type PasswordLength string
+
+func (l *PasswordLength) String() string {
+	return string(*l)
+}
+
+func (l *PasswordLength) Set(valore string) error {
+	length, err := strconv.Atoi(valore)
+	if err != nil {
+		return err
+	}
+	numberOfCharSets := 4
+
+	if length < numberOfCharSets {
+		return errors.New("Invalid length: " + valore)
+	}
+
+	*l = PasswordLength(valore)
+	return nil
+}
 
 // Password command ------------------------------------------------------------------------
 
@@ -98,4 +121,46 @@ func shuffle(s string) string {
 		inRune[i], inRune[j] = inRune[j], inRune[i]
 	})
 	return string(inRune)
+}
+
+// PasswordSubcommand -----------------------------------------------------------------
+
+type PasswordSubcommand struct{}
+
+func (s PasswordSubcommand) Name() string {
+	return "password"
+}
+
+func (s PasswordSubcommand) Description() string {
+	return "Generates a random password"
+}
+
+func (s PasswordSubcommand) createFlagSet(outputWriter io.Writer) (*flag.FlagSet, *PasswordLength) {
+	passwordCmd := flag.NewFlagSet(s.Name(), flag.ContinueOnError)
+	passwordCmd.SetOutput(outputWriter)
+	defaultLength := "14"
+	passwordLength := PasswordLength(defaultLength)
+	passwordCmd.Var(&passwordLength, "length", "length of the password (min 4)")
+	passwordCmd.Usage = func() {
+		fmt.Fprintf(passwordCmd.Output(), "Usage: generate password [-length n]\n\nOptions:\n")
+		passwordCmd.PrintDefaults()
+	}
+	return passwordCmd, &passwordLength
+}
+
+func (s PasswordSubcommand) Parse(args []string, outputWriter io.Writer) (Command, map[string]string, error) {
+	passwordCmd, passwordLength := s.createFlagSet(outputWriter)
+	err := passwordCmd.Parse(args)
+	if err != nil {
+		return nil, nil, err
+	}
+	otherArgs := map[string]string{
+		"length": passwordLength.String(),
+	}
+	return PasswordCommand{}, otherArgs, nil
+}
+
+func (s PasswordSubcommand) PrintDefaults(outputWriter io.Writer) {
+	passwordCmd, _ := s.createFlagSet(outputWriter)
+	passwordCmd.PrintDefaults()
 }

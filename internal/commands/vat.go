@@ -2,7 +2,9 @@ package commands
 
 import (
 	"errors"
+	"flag"
 	"fmt"
+	"io"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -62,4 +64,45 @@ func isEven(i int) bool {
 
 func (cmd VatCommand) DiscardOutput() bool {
 	return false
+}
+
+// VatSubcommand ----------------------------------------------------------------------
+
+type VatSubcommand struct{}
+
+func (s VatSubcommand) Name() string {
+	return "vat"
+}
+
+func (s VatSubcommand) Description() string {
+	return "Generates a valid VAT number"
+}
+
+func (s VatSubcommand) createFlagSet(outputWriter io.Writer) (*flag.FlagSet, *string) {
+	vatCmd := flag.NewFlagSet(s.Name(), flag.ContinueOnError)
+	vatCmd.SetOutput(outputWriter)
+	defaultCountry := "IT"
+	vatInputCountry := vatCmd.String("country", defaultCountry, "VAT code country code (e.g. IT, ES, NL) (Only IT is supported at this time)")
+	vatCmd.Usage = func() {
+		fmt.Fprintf(vatCmd.Output(), "Usage: generate vat [-country COUNTRY_CODE]\n\nOptions:\n")
+		vatCmd.PrintDefaults()
+	}
+	return vatCmd, vatInputCountry
+}
+
+func (s VatSubcommand) Parse(args []string, outputWriter io.Writer) (Command, map[string]string, error) {
+	vatCmd, vatInputCountry := s.createFlagSet(outputWriter)
+	err := vatCmd.Parse(args)
+	if err != nil {
+		return nil, nil, err
+	}
+	otherArgs := map[string]string{
+		"country": strings.ToUpper(*vatInputCountry),
+	}
+	return VatCommand{}, otherArgs, nil
+}
+
+func (s VatSubcommand) PrintDefaults(outputWriter io.Writer) {
+	vatCmd, _ := s.createFlagSet(outputWriter)
+	vatCmd.PrintDefaults()
 }

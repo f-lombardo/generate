@@ -2,10 +2,28 @@ package commands
 
 import (
 	"errors"
+	"flag"
 	"fmt"
+	"io"
 
 	"github.com/google/uuid"
 )
+
+type UUIDVersion string
+
+func (f *UUIDVersion) String() string {
+	return string(*f)
+}
+
+func (f *UUIDVersion) Set(valore string) error {
+	switch valore {
+	case "4", "7":
+		*f = UUIDVersion(valore)
+		return nil
+	default:
+		return errors.New("UUID version should be '4' or '7' (default 4)")
+	}
+}
 
 // Uuid command ------------------------------------------------------------------------
 
@@ -44,4 +62,46 @@ func (cmd UUIDCommand) Execute(otherArgs map[string]string) (fmt.Stringer, error
 
 func (cmd UUIDCommand) DiscardOutput() bool {
 	return false
+}
+
+// UUIDSubcommand ---------------------------------------------------------------------
+
+type UUIDSubcommand struct{}
+
+func (s UUIDSubcommand) Name() string {
+	return "uuid"
+}
+
+func (s UUIDSubcommand) Description() string {
+	return "Generates a UUID v4 or v7"
+}
+
+func (s UUIDSubcommand) createFlagSet(outputWriter io.Writer) (*flag.FlagSet, *UUIDVersion) {
+	uuidCmd := flag.NewFlagSet(s.Name(), flag.ContinueOnError)
+	uuidCmd.SetOutput(outputWriter)
+	defaultVersion := "4"
+	uuidVersion := UUIDVersion(defaultVersion)
+	uuidCmd.Var(&uuidVersion, "version", "UUID version (4 or 7)")
+	uuidCmd.Usage = func() {
+		fmt.Fprintf(uuidCmd.Output(), "Usage: generate uuid [-version uuid_version_number]\n\nOptions:\n")
+		uuidCmd.PrintDefaults()
+	}
+	return uuidCmd, &uuidVersion
+}
+
+func (s UUIDSubcommand) Parse(args []string, outputWriter io.Writer) (Command, map[string]string, error) {
+	uuidCmd, uuidVersion := s.createFlagSet(outputWriter)
+	err := uuidCmd.Parse(args)
+	if err != nil {
+		return nil, nil, err
+	}
+	otherArgs := map[string]string{
+		"version": uuidVersion.String(),
+	}
+	return UUIDCommand{}, otherArgs, nil
+}
+
+func (s UUIDSubcommand) PrintDefaults(outputWriter io.Writer) {
+	uuidCmd, _ := s.createFlagSet(outputWriter)
+	uuidCmd.PrintDefaults()
 }
