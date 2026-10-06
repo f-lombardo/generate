@@ -25,7 +25,7 @@ type VatCommand struct{}
 func (cmd VatCommand) Execute(otherArgs map[string]string) (fmt.Stringer, error) {
 	country := otherArgs["country"]
 
-	if "IT" != country {
+	if country != "IT" {
 		return nil, errors.New("Invalid country: " + country + ". Only IT VAT numbers are supported at the moment")
 	}
 
@@ -84,7 +84,7 @@ func (s VatCliSubcommand) createFlagSet(outputWriter io.Writer) (*flag.FlagSet, 
 	defaultCountry := "IT"
 	vatInputCountry := vatCmd.String("country", defaultCountry, "VAT code country code (e.g. IT, ES, NL) (Only IT is supported at this time)")
 	vatCmd.Usage = func() {
-		fmt.Fprintf(vatCmd.Output(), "Usage: generate vat [-country COUNTRY_CODE]\n\nOptions:\n")
+		_, _ = fmt.Fprintf(vatCmd.Output(), "Usage: generate vat [-country COUNTRY_CODE]\n\nOptions:\n")
 		vatCmd.PrintDefaults()
 	}
 	return vatCmd, vatInputCountry

@@ -60,16 +60,16 @@ func ReadOptions(args []string, outputWriter io.Writer) (Options, error) {
 	fs.Var(&options.OutputFormat, "output", "Output format. Valid values: json, tab. Default value: tab")
 
 	fs.Usage = func() {
-		fmt.Fprintf(fs.Output(), "Usage: generate [global options] <command> [command options]\n\n")
-		fmt.Fprintf(fs.Output(), "Global options:\n")
+		_, _ = fmt.Fprintf(fs.Output(), "Usage: generate [global options] <command> [command options]\n\n")
+		_, _ = fmt.Fprintf(fs.Output(), "Global options:\n")
 		fs.PrintDefaults()
-		fmt.Fprintf(fs.Output(), "\nAvailable commands:\n\n")
+		_, _ = fmt.Fprintf(fs.Output(), "\nAvailable commands:\n\n")
 
 		for _, sub := range commands.AllCliSubcommands() {
-			fmt.Fprintf(fs.Output(), "  %s\t%s\n", sub.Name(), sub.Description())
-			fmt.Fprintf(fs.Output(), "  Command options:\n")
+			_, _ = fmt.Fprintf(fs.Output(), "  %s\t%s\n", sub.Name(), sub.Description())
+			_, _ = fmt.Fprintf(fs.Output(), "  Command options:\n")
 			sub.PrintDefaults(fs.Output())
-			fmt.Fprintf(fs.Output(), "\n")
+			_, _ = fmt.Fprintf(fs.Output(), "\n")
 		}
 	}
 

@@ -6,6 +6,20 @@ build: ## Builds the executable
 test: ## Runs tests
 	go test -v -p 1 ./...
 
+.PHONY: quality
+quality: ## Runs quality checks (golangci-lint, govulncheck, and tests)
+	@echo "--> Formatting code..."
+	go fmt ./...
+	@echo "--> Running golangci-lint..."
+	golangci-lint run ./...
+	@echo "--> Running go vet.."
+	go vet ./...
+	@echo "--> Checking vulnerabilities.."
+	govulncheck ./...
+	@echo "--> Running tests..."
+	$(MAKE) test
+
+
 .PHONY: clean
 clean: ## Cleans temporary files
 	rm -rf generate cover.out dist

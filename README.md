@@ -194,7 +194,7 @@ generate -output json vat -country IT
 
 ---
 
-## 🧪 Running Tests
+## 🧪 Running Tests & Quality Checks
 
 To run the unit test suite using Makefile:
 
@@ -206,6 +206,14 @@ Or directly using `go`:
 
 ```bash
 go test -v -p 1 ./...
+```
+
+### Running Code Quality Checks
+
+To run all quality checks (code formatting, `golangci-lint`, `go vet`, vulnerability scan with `govulncheck`, and unit tests):
+
+```bash
+make quality
 ```
 
 ---

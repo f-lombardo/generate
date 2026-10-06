@@ -83,7 +83,7 @@ func (s UUIDCliSubcommand) createFlagSet(outputWriter io.Writer) (*flag.FlagSet,
 	uuidVersion := UUIDVersion(defaultVersion)
 	uuidCmd.Var(&uuidVersion, "version", "UUID version (4 or 7)")
 	uuidCmd.Usage = func() {
-		fmt.Fprintf(uuidCmd.Output(), "Usage: generate uuid [-version uuid_version_number]\n\nOptions:\n")
+		_, _ = fmt.Fprintf(uuidCmd.Output(), "Usage: generate uuid [-version uuid_version_number]\n\nOptions:\n")
 		uuidCmd.PrintDefaults()
 	}
 	return uuidCmd, &uuidVersion

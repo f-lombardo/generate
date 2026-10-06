@@ -25,8 +25,8 @@ func executeProgram(args []string, stdout io.Writer, stderr io.Writer) error {
 	}
 
 	if *opts.Version {
-		fmt.Fprintln(stdout, "Version "+version+" - git infos "+utils.GetGitHash())
-		return nil
+		_, err := fmt.Fprintln(stdout, "Version "+version+" - git infos "+utils.GetGitHash())
+		return err
 	}
 
 	structResult, err := opts.Command.Execute(opts.OtherArgs)
@@ -47,7 +47,8 @@ func executeProgram(args []string, stdout io.Writer, stderr io.Writer) error {
 	}
 
 	if !opts.Command.DiscardOutput() {
-		fmt.Fprintln(stdout, result)
+		_, err := fmt.Fprintln(stdout, result)
+		return err
 	}
 
 	return nil

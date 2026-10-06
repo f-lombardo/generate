@@ -54,9 +54,7 @@ func ReadFromClipboard() (string, error) {
 		return "", err
 	}
 
-	select {
-	case <-ctx.Done():
-	}
+	<-ctx.Done()
 
 	return string(b), nil
 }

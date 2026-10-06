@@ -54,7 +54,7 @@ func (s IbanCliSubcommand) createFlagSet(outputWriter io.Writer) (*flag.FlagSet,
 	defaultCountry := "IT"
 	inputCountry := ibanCmd.String("country", defaultCountry, "IBAN country code (e.g. IT, ES, NL)")
 	ibanCmd.Usage = func() {
-		fmt.Fprintf(ibanCmd.Output(), "Usage: generate iban [-country COUNTRY_CODE]\n\nOptions:\n")
+		_, _ = fmt.Fprintf(ibanCmd.Output(), "Usage: generate iban [-country COUNTRY_CODE]\n\nOptions:\n")
 		ibanCmd.PrintDefaults()
 	}
 	return ibanCmd, inputCountry

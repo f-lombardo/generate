@@ -142,7 +142,7 @@ func (s PasswordCliSubcommand) createFlagSet(outputWriter io.Writer) (*flag.Flag
 	passwordLength := PasswordLength(defaultLength)
 	passwordCmd.Var(&passwordLength, "length", "length of the password (min 4)")
 	passwordCmd.Usage = func() {
-		fmt.Fprintf(passwordCmd.Output(), "Usage: generate password [-length n]\n\nOptions:\n")
+		_, _ = fmt.Fprintf(passwordCmd.Output(), "Usage: generate password [-length n]\n\nOptions:\n")
 		passwordCmd.PrintDefaults()
 	}
 	return passwordCmd, &passwordLength
