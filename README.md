@@ -4,6 +4,10 @@
 
 # generate
 
+<p align="center">
+  <img src="docs/person.png" />
+</p>
+
 `generate` is a command-line interface (CLI) tool written in Go for quickly generating sample and test data such as IBAN
 numbers, VAT numbers, UUIDs, and random passwords. It is designed to fit seamlessly into developer workflows by automatically copying
 generated output directly to the system clipboard.
