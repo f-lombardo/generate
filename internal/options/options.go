@@ -65,7 +65,7 @@ func ReadOptions(args []string, outputWriter io.Writer) (Options, error) {
 		fs.PrintDefaults()
 		fmt.Fprintf(fs.Output(), "\nAvailable commands:\n\n")
 
-		for _, sub := range commands.AllSubcommands() {
+		for _, sub := range commands.AllCliSubcommands() {
 			fmt.Fprintf(fs.Output(), "  %s\t%s\n", sub.Name(), sub.Description())
 			fmt.Fprintf(fs.Output(), "  Command options:\n")
 			sub.PrintDefaults(fs.Output())
@@ -91,7 +91,7 @@ func ReadOptions(args []string, outputWriter io.Writer) (Options, error) {
 
 	subcommandName := remainingArgs[0]
 
-	sub, found := commands.FindSubcommand(subcommandName)
+	sub, found := commands.FindCliSubcommand(subcommandName)
 	if !found {
 		fs.Usage()
 		return Options{}, errors.New("Invalid command: " + subcommandName)

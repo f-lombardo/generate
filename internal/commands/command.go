@@ -10,15 +10,15 @@ type Command interface {
 	DiscardOutput() bool
 }
 
-type Subcommand interface {
+type CliSubcommand interface {
 	Name() string
 	Description() string
 	Parse(args []string, outputWriter io.Writer) (Command, map[string]string, error)
 	PrintDefaults(outputWriter io.Writer)
 }
 
-func AllSubcommands() []Subcommand {
-	return []Subcommand{
+func AllCliSubcommands() []CliSubcommand {
+	return []CliSubcommand{
 		IbanSubcommand{},
 		UUIDSubcommand{},
 		PasswordSubcommand{},
@@ -26,8 +26,8 @@ func AllSubcommands() []Subcommand {
 	}
 }
 
-func FindSubcommand(name string) (Subcommand, bool) {
-	for _, sub := range AllSubcommands() {
+func FindCliSubcommand(name string) (CliSubcommand, bool) {
+	for _, sub := range AllCliSubcommands() {
 		if sub.Name() == name {
 			return sub, true
 		}
