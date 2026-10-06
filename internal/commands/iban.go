@@ -36,19 +36,19 @@ func (cmd IbanCommand) DiscardOutput() bool {
 	return false
 }
 
-// IbanSubcommand ---------------------------------------------------------------------
+// IbanCliSubcommand ---------------------------------------------------------------------
 
-type IbanSubcommand struct{}
+type IbanCliSubcommand struct{}
 
-func (s IbanSubcommand) Name() string {
+func (s IbanCliSubcommand) Name() string {
 	return "iban"
 }
 
-func (s IbanSubcommand) Description() string {
+func (s IbanCliSubcommand) Description() string {
 	return "Generates a valid IBAN"
 }
 
-func (s IbanSubcommand) createFlagSet(outputWriter io.Writer) (*flag.FlagSet, *string) {
+func (s IbanCliSubcommand) createFlagSet(outputWriter io.Writer) (*flag.FlagSet, *string) {
 	ibanCmd := flag.NewFlagSet(s.Name(), flag.ContinueOnError)
 	ibanCmd.SetOutput(outputWriter)
 	defaultCountry := "IT"
@@ -60,7 +60,7 @@ func (s IbanSubcommand) createFlagSet(outputWriter io.Writer) (*flag.FlagSet, *s
 	return ibanCmd, inputCountry
 }
 
-func (s IbanSubcommand) Parse(args []string, outputWriter io.Writer) (Command, map[string]string, error) {
+func (s IbanCliSubcommand) Parse(args []string, outputWriter io.Writer) (Command, map[string]string, error) {
 	ibanCmd, inputCountry := s.createFlagSet(outputWriter)
 	err := ibanCmd.Parse(args)
 	if err != nil {
@@ -72,7 +72,7 @@ func (s IbanSubcommand) Parse(args []string, outputWriter io.Writer) (Command, m
 	return IbanCommand{}, otherArgs, nil
 }
 
-func (s IbanSubcommand) PrintDefaults(outputWriter io.Writer) {
+func (s IbanCliSubcommand) PrintDefaults(outputWriter io.Writer) {
 	ibanCmd, _ := s.createFlagSet(outputWriter)
 	ibanCmd.PrintDefaults()
 }

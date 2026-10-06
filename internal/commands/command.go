@@ -10,6 +10,8 @@ type Command interface {
 	DiscardOutput() bool
 }
 
+// Types for CLI parameters parsing
+
 type CliSubcommand interface {
 	Name() string
 	Description() string
@@ -19,10 +21,10 @@ type CliSubcommand interface {
 
 func AllCliSubcommands() []CliSubcommand {
 	return []CliSubcommand{
-		IbanSubcommand{},
-		UUIDSubcommand{},
-		PasswordSubcommand{},
-		VatSubcommand{},
+		IbanCliSubcommand{},
+		UUIDCliSubcommand{},
+		PasswordCliSubcommand{},
+		VatCliSubcommand{},
 	}
 }
 

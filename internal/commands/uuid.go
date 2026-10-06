@@ -64,19 +64,19 @@ func (cmd UUIDCommand) DiscardOutput() bool {
 	return false
 }
 
-// UUIDSubcommand ---------------------------------------------------------------------
+// UUIDCliSubcommand ---------------------------------------------------------------------
 
-type UUIDSubcommand struct{}
+type UUIDCliSubcommand struct{}
 
-func (s UUIDSubcommand) Name() string {
+func (s UUIDCliSubcommand) Name() string {
 	return "uuid"
 }
 
-func (s UUIDSubcommand) Description() string {
+func (s UUIDCliSubcommand) Description() string {
 	return "Generates a UUID v4 or v7"
 }
 
-func (s UUIDSubcommand) createFlagSet(outputWriter io.Writer) (*flag.FlagSet, *UUIDVersion) {
+func (s UUIDCliSubcommand) createFlagSet(outputWriter io.Writer) (*flag.FlagSet, *UUIDVersion) {
 	uuidCmd := flag.NewFlagSet(s.Name(), flag.ContinueOnError)
 	uuidCmd.SetOutput(outputWriter)
 	defaultVersion := "4"
@@ -89,7 +89,7 @@ func (s UUIDSubcommand) createFlagSet(outputWriter io.Writer) (*flag.FlagSet, *U
 	return uuidCmd, &uuidVersion
 }
 
-func (s UUIDSubcommand) Parse(args []string, outputWriter io.Writer) (Command, map[string]string, error) {
+func (s UUIDCliSubcommand) Parse(args []string, outputWriter io.Writer) (Command, map[string]string, error) {
 	uuidCmd, uuidVersion := s.createFlagSet(outputWriter)
 	err := uuidCmd.Parse(args)
 	if err != nil {
@@ -101,7 +101,7 @@ func (s UUIDSubcommand) Parse(args []string, outputWriter io.Writer) (Command, m
 	return UUIDCommand{}, otherArgs, nil
 }
 
-func (s UUIDSubcommand) PrintDefaults(outputWriter io.Writer) {
+func (s UUIDCliSubcommand) PrintDefaults(outputWriter io.Writer) {
 	uuidCmd, _ := s.createFlagSet(outputWriter)
 	uuidCmd.PrintDefaults()
 }

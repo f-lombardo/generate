@@ -123,19 +123,19 @@ func shuffle(s string) string {
 	return string(inRune)
 }
 
-// PasswordSubcommand -----------------------------------------------------------------
+// PassworClidSubcommand -----------------------------------------------------------------
 
-type PasswordSubcommand struct{}
+type PasswordCliSubcommand struct{}
 
-func (s PasswordSubcommand) Name() string {
+func (s PasswordCliSubcommand) Name() string {
 	return "password"
 }
 
-func (s PasswordSubcommand) Description() string {
+func (s PasswordCliSubcommand) Description() string {
 	return "Generates a random password"
 }
 
-func (s PasswordSubcommand) createFlagSet(outputWriter io.Writer) (*flag.FlagSet, *PasswordLength) {
+func (s PasswordCliSubcommand) createFlagSet(outputWriter io.Writer) (*flag.FlagSet, *PasswordLength) {
 	passwordCmd := flag.NewFlagSet(s.Name(), flag.ContinueOnError)
 	passwordCmd.SetOutput(outputWriter)
 	defaultLength := "14"
@@ -148,7 +148,7 @@ func (s PasswordSubcommand) createFlagSet(outputWriter io.Writer) (*flag.FlagSet
 	return passwordCmd, &passwordLength
 }
 
-func (s PasswordSubcommand) Parse(args []string, outputWriter io.Writer) (Command, map[string]string, error) {
+func (s PasswordCliSubcommand) Parse(args []string, outputWriter io.Writer) (Command, map[string]string, error) {
 	passwordCmd, passwordLength := s.createFlagSet(outputWriter)
 	err := passwordCmd.Parse(args)
 	if err != nil {
@@ -160,7 +160,7 @@ func (s PasswordSubcommand) Parse(args []string, outputWriter io.Writer) (Comman
 	return PasswordCommand{}, otherArgs, nil
 }
 
-func (s PasswordSubcommand) PrintDefaults(outputWriter io.Writer) {
+func (s PasswordCliSubcommand) PrintDefaults(outputWriter io.Writer) {
 	passwordCmd, _ := s.createFlagSet(outputWriter)
 	passwordCmd.PrintDefaults()
 }

@@ -66,19 +66,19 @@ func (cmd VatCommand) DiscardOutput() bool {
 	return false
 }
 
-// VatSubcommand ----------------------------------------------------------------------
+// VatCliSubcommand ----------------------------------------------------------------------
 
-type VatSubcommand struct{}
+type VatCliSubcommand struct{}
 
-func (s VatSubcommand) Name() string {
+func (s VatCliSubcommand) Name() string {
 	return "vat"
 }
 
-func (s VatSubcommand) Description() string {
+func (s VatCliSubcommand) Description() string {
 	return "Generates a valid VAT number"
 }
 
-func (s VatSubcommand) createFlagSet(outputWriter io.Writer) (*flag.FlagSet, *string) {
+func (s VatCliSubcommand) createFlagSet(outputWriter io.Writer) (*flag.FlagSet, *string) {
 	vatCmd := flag.NewFlagSet(s.Name(), flag.ContinueOnError)
 	vatCmd.SetOutput(outputWriter)
 	defaultCountry := "IT"
@@ -90,7 +90,7 @@ func (s VatSubcommand) createFlagSet(outputWriter io.Writer) (*flag.FlagSet, *st
 	return vatCmd, vatInputCountry
 }
 
-func (s VatSubcommand) Parse(args []string, outputWriter io.Writer) (Command, map[string]string, error) {
+func (s VatCliSubcommand) Parse(args []string, outputWriter io.Writer) (Command, map[string]string, error) {
 	vatCmd, vatInputCountry := s.createFlagSet(outputWriter)
 	err := vatCmd.Parse(args)
 	if err != nil {
@@ -102,7 +102,7 @@ func (s VatSubcommand) Parse(args []string, outputWriter io.Writer) (Command, ma
 	return VatCommand{}, otherArgs, nil
 }
 
-func (s VatSubcommand) PrintDefaults(outputWriter io.Writer) {
+func (s VatCliSubcommand) PrintDefaults(outputWriter io.Writer) {
 	vatCmd, _ := s.createFlagSet(outputWriter)
 	vatCmd.PrintDefaults()
 }
