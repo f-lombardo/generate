@@ -1,4 +1,4 @@
-package main
+package options
 
 import (
 	"bytes"
@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/f-lombardo/generate/internal/commands"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -21,62 +22,62 @@ func TestParseGoodArgs(t *testing.T) {
 			testName: "iban default values",
 			args:     []string{"iban"},
 			expectedOptions: Options{
-				outputFormat: defaultFormat(),
-				clipboard:    trueValuePointer(),
-				version:      falseValuePointer(),
-				command:      IbanCommand{},
-				otherArgs:    map[string]string{"country": "IT"},
+				OutputFormat: defaultFormat(),
+				Clipboard:    trueValuePointer(),
+				Version:      falseValuePointer(),
+				Command:      commands.IbanCommand{},
+				OtherArgs:    map[string]string{"country": "IT"},
 			},
 		},
 		{
 			testName: "uuid default values",
 			args:     []string{"uuid"},
 			expectedOptions: Options{
-				outputFormat: defaultFormat(),
-				clipboard:    trueValuePointer(),
-				version:      falseValuePointer(),
-				command:      UUIDCommand{},
-				otherArgs:    map[string]string{"version": "4"},
+				OutputFormat: defaultFormat(),
+				Clipboard:    trueValuePointer(),
+				Version:      falseValuePointer(),
+				Command:      commands.UUIDCommand{},
+				OtherArgs:    map[string]string{"version": "4"},
 			},
 		},
 		{
 			testName: "iban default values with global options",
 			args:     []string{"-clipboard=false", "-output", "json", "iban"},
 			expectedOptions: Options{
-				outputFormat: jsonFormat(),
-				clipboard:    falseValuePointer(),
-				version:      falseValuePointer(),
-				command:      IbanCommand{},
-				otherArgs:    map[string]string{"country": "IT"},
+				OutputFormat: jsonFormat(),
+				Clipboard:    falseValuePointer(),
+				Version:      falseValuePointer(),
+				Command:      commands.IbanCommand{},
+				OtherArgs:    map[string]string{"country": "IT"},
 			},
 		},
 		{
 			testName: "uuid default values with global options",
 			args:     []string{"-clipboard=false", "-output", "json", "uuid"},
 			expectedOptions: Options{
-				outputFormat: jsonFormat(),
-				clipboard:    falseValuePointer(),
-				version:      falseValuePointer(),
-				command:      UUIDCommand{},
-				otherArgs:    map[string]string{"version": "4"},
+				OutputFormat: jsonFormat(),
+				Clipboard:    falseValuePointer(),
+				Version:      falseValuePointer(),
+				Command:      commands.UUIDCommand{},
+				OtherArgs:    map[string]string{"version": "4"},
 			},
 		},
 		{
 			testName: "version flag",
 			args:     []string{"-version"},
 			expectedOptions: Options{
-				outputFormat: defaultFormat(),
-				clipboard:    trueValuePointer(),
-				version:      trueValuePointer(),
-				command:      nil,
-				otherArgs:    map[string]string{},
+				OutputFormat: defaultFormat(),
+				Clipboard:    trueValuePointer(),
+				Version:      trueValuePointer(),
+				Command:      nil,
+				OtherArgs:    map[string]string{},
 			},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.testName, func(t *testing.T) {
-			options, err := readOptions(tt.args, os.Stderr)
+			options, err := ReadOptions(tt.args, os.Stderr)
 
 			require.NoError(t, err)
 			require.NotNil(t, options)
@@ -113,7 +114,7 @@ func TestHelpArgs(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.testName, func(t *testing.T) {
 			var buf bytes.Buffer
-			_, err := readOptions(tt.args, &buf)
+			_, err := ReadOptions(tt.args, &buf)
 
 			require.Error(t, err)
 
@@ -180,7 +181,7 @@ func TestWrongArgs(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.testName, func(t *testing.T) {
 			var buf bytes.Buffer
-			_, err := readOptions(tt.args, &buf)
+			_, err := ReadOptions(tt.args, &buf)
 
 			require.Error(t, err)
 

@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"testing"
@@ -9,10 +9,10 @@ import (
 func TestClipboard(t *testing.T) {
 	s := "Test string"
 
-	err := copyToClipboard(s)
+	err := CopyToClipboard(s)
 	assert.NoError(t, err)
 
-	actual, err := readFromClipboard()
+	actual, err := ReadFromClipboard()
 	assert.NoError(t, err)
 
 	assert.Equal(t, s, actual)

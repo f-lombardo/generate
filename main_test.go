@@ -8,6 +8,8 @@ import (
 	"strings"
 	"testing"
 
+	main2 "github.com/f-lombardo/generate/internal/commands"
+	"github.com/f-lombardo/generate/internal/utils"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -30,7 +32,7 @@ func TestGoodProgramExecutions(t *testing.T) {
 				if !strings.HasPrefix(actualResultWithoutNewLine, "IT") {
 					return fmt.Errorf("expected to start with 'IT' prefix, while output is: %s", actualResultWithoutNewLine)
 				}
-				actualClipboardData, err := readFromClipboard()
+				actualClipboardData, err := utils.ReadFromClipboard()
 				if err != nil {
 					return err
 				}
@@ -46,7 +48,7 @@ func TestGoodProgramExecutions(t *testing.T) {
 				if !strings.HasPrefix(actualResultWithoutNewLine, "IT") {
 					return fmt.Errorf("expected to start with 'IT' prefix, while output is: %s", actualResultWithoutNewLine)
 				}
-				actualClipboardData, err := readFromClipboard()
+				actualClipboardData, err := utils.ReadFromClipboard()
 				if err != nil {
 					return err
 				}
@@ -61,7 +63,7 @@ func TestGoodProgramExecutions(t *testing.T) {
 				if !strings.HasPrefix(s, "IT") {
 					return fmt.Errorf("expected to start with 'IT' prefix, while output is: %s", s)
 				}
-				clipboardData, err := readFromClipboard()
+				clipboardData, err := utils.ReadFromClipboard()
 				if err != nil {
 					return err
 				}
@@ -86,7 +88,7 @@ func TestGoodProgramExecutions(t *testing.T) {
 				//if !strings.HasPrefix(s, "{\"IBAN\":\"ES") {
 				//	return fmt.Errorf("expected to start with 'ES' prefix, while output is: %s", s)
 				//}
-				var object IbanResult
+				var object main2.IbanResult
 				decoder := json.NewDecoder(strings.NewReader(s))
 				decoder.DisallowUnknownFields()
 				if err := decoder.Decode(&object); err != nil {
@@ -106,7 +108,7 @@ func TestGoodProgramExecutions(t *testing.T) {
 				if err := validateUUID("4", actualResultWithoutNewLine); err != nil {
 					return err
 				}
-				actualClipboardData, err := readFromClipboard()
+				actualClipboardData, err := utils.ReadFromClipboard()
 				if err != nil {
 					return err
 				}
@@ -122,7 +124,7 @@ func TestGoodProgramExecutions(t *testing.T) {
 				if err := validateUUID("7", actualResultWithoutNewLine); err != nil {
 					return err
 				}
-				actualClipboardData, err := readFromClipboard()
+				actualClipboardData, err := utils.ReadFromClipboard()
 				if err != nil {
 					return err
 				}
@@ -136,7 +138,7 @@ func TestGoodProgramExecutions(t *testing.T) {
 			outputVerifier: func(s string) error {
 				actualResultWithoutNewLine := strings.TrimSuffix(s, "\n")
 				assert.Empty(t, actualResultWithoutNewLine)
-				actualClipboardData, err := readFromClipboard()
+				actualClipboardData, err := utils.ReadFromClipboard()
 				if err != nil {
 					return err
 				}
@@ -150,7 +152,7 @@ func TestGoodProgramExecutions(t *testing.T) {
 			outputVerifier: func(s string) error {
 				actualResultWithoutNewLine := strings.TrimSuffix(s, "\n")
 				assert.Empty(t, actualResultWithoutNewLine)
-				actualClipboardData, err := readFromClipboard()
+				actualClipboardData, err := utils.ReadFromClipboard()
 				if err != nil {
 					return err
 				}
@@ -181,7 +183,7 @@ func TestGoodProgramExecutions(t *testing.T) {
 
 	for _, tt := range tests {
 		// Before each
-		err := copyToClipboard(previousClipboardData)
+		err := utils.CopyToClipboard(previousClipboardData)
 		require.NoError(t, err)
 
 		t.Run(tt.testName, func(t *testing.T) {

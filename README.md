@@ -43,7 +43,13 @@ brew install generate
 
 ([Go](https://golang.org/) 1.27 or higher is required.)
 
-Clone the repository and build the binary using:
+Clone the repository and build the binary using Makefile:
+
+```bash
+make build
+```
+
+Or directly using `go`:
 
 ```bash
 go build -o generate .
@@ -154,16 +160,16 @@ Generates a syntactically valid VAT number.
 **Command Options:**
 
 - `-country` *(string, default: `IT`)*: ISO 3166-1 alpha-2 country code (e.g., `IT`, `ES`, `DE`, `FR`, `NL`).
-**Only IT is supported at this tim.e**
+**Only IT is supported at this time.**
 
 **Examples:**
 
 ```bash
 # Generate an Italian VAT number and copy it to clipboard
-generate VAT
+generate vat
 
-# Generate an Italian VAT number and copy it to clipboard
-generate iban -country IT
+# Generate an Italian VAT number with country flag
+generate vat -country IT
 
 # Format output as JSON
 generate -output json vat -country IT
@@ -190,10 +196,16 @@ generate -output json vat -country IT
 
 ## 🧪 Running Tests
 
-To run the unit test suite:
+To run the unit test suite using Makefile:
 
 ```bash
-go test -v ./...
+make test
+```
+
+Or directly using `go`:
+
+```bash
+go test -v -p 1 ./...
 ```
 
 ---

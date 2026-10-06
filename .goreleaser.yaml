@@ -2,7 +2,8 @@ version: 2
 
 project_name: generate
 builds:
-  - env: [CGO_ENABLED=0]
+  - main: .
+    env: [CGO_ENABLED=0]
     targets: [go_first_class]
     ldflags:
       - "-s -w -X main.version={{ .Version }}"

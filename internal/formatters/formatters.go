@@ -1,8 +1,10 @@
-package main
+package formatters
 
 import (
 	"encoding/json"
 	"fmt"
+
+	"github.com/f-lombardo/generate/internal/utils"
 )
 
 type Formatter interface {
@@ -14,7 +16,7 @@ type JSONFormatter struct {
 
 func (j JSONFormatter) Format(structResult fmt.Stringer) (string, error) {
 	result, err := json.Marshal(structResult)
-	StopIf(err)
+	utils.StopIf(err)
 	return string(result), nil
 }
 

@@ -1,4 +1,4 @@
-package main
+package options
 
 import (
 	"errors"
@@ -7,10 +7,13 @@ import (
 	"io"
 	"strconv"
 	"strings"
+
+	"github.com/f-lombardo/generate/internal/commands"
+	"github.com/f-lombardo/generate/internal/formatters"
 )
 
 type OutputFormat struct {
-	formatter Formatter
+	Formatter formatters.Formatter
 }
 
 // Required by flag.Value
@@ -22,10 +25,10 @@ func (f *OutputFormat) String() string {
 func (f *OutputFormat) Set(valore string) error {
 	switch valore {
 	case "json":
-		f.formatter = JSONFormatter{}
+		f.Formatter = formatters.JSONFormatter{}
 		return nil
 	case "tab":
-		f.formatter = TabFormatter{}
+		f.Formatter = formatters.TabFormatter{}
 		return nil
 	default:
 		return errors.New("output format must be 'json' o 'tab' (default)")
@@ -70,30 +73,30 @@ func (f *UUIDVersion) Set(valore string) error {
 }
 
 type Options struct {
-	outputFormat OutputFormat
-	clipboard    *bool
-	version      *bool
-	command      Command
-	otherArgs    map[string]string
+	OutputFormat OutputFormat
+	Clipboard    *bool
+	Version      *bool
+	Command      commands.Command
+	OtherArgs    map[string]string
 }
 
 // Passing nil to outputWriter is the same as passing os.Stderr
-func readOptions(args []string, outputWriter io.Writer) (Options, error) {
+func ReadOptions(args []string, outputWriter io.Writer) (Options, error) {
 	options := Options{
-		clipboard: new(bool),
-		version:   new(bool),
-		otherArgs: make(map[string]string),
+		Clipboard: new(bool),
+		Version:   new(bool),
+		OtherArgs: make(map[string]string),
 	}
 
 	fs := flag.NewFlagSet("create", flag.ContinueOnError)
 	fs.SetOutput(outputWriter)
 
-	options.version = fs.Bool("version", false, "Prints current version and exits")
+	options.Version = fs.Bool("version", false, "Prints current version and exits")
 
-	options.clipboard = fs.Bool("clipboard", true, "Copies the results to the system clipboard. E.g. --clipboard=false")
+	options.Clipboard = fs.Bool("clipboard", true, "Copies the results to the system clipboard. E.g. --clipboard=false")
 
-	options.outputFormat = defaultFormat()
-	fs.Var(&options.outputFormat, "output", "Output format. Valid values: json, tab. Default value: tab")
+	options.OutputFormat = defaultFormat()
+	fs.Var(&options.OutputFormat, "output", "Output format. Valid values: json, tab. Default value: tab")
 
 	// iban subcommand
 	ibanCmd := flag.NewFlagSet("iban", flag.ContinueOnError)
@@ -172,7 +175,7 @@ func readOptions(args []string, outputWriter io.Writer) (Options, error) {
 	remainingArgs := fs.Args()
 
 	if len(remainingArgs) < 1 {
-		if *options.version {
+		if *options.Version {
 			return options, nil
 		}
 		fs.Usage()
@@ -187,32 +190,32 @@ func readOptions(args []string, outputWriter io.Writer) (Options, error) {
 		if err != nil {
 			return Options{}, err
 		}
-		options.command = IbanCommand{}
-		options.otherArgs["country"] = strings.ToUpper(*inputCountry)
+		options.Command = commands.IbanCommand{}
+		options.OtherArgs["country"] = strings.ToUpper(*inputCountry)
 
 	case "uuid":
 		err := uuidCmd.Parse(remainingArgs[1:])
 		if err != nil {
 			return Options{}, err
 		}
-		options.command = UUIDCommand{}
-		options.otherArgs["version"] = uuidVersion.String()
+		options.Command = commands.UUIDCommand{}
+		options.OtherArgs["version"] = uuidVersion.String()
 
 	case "password":
 		err := passwordCmd.Parse(remainingArgs[1:])
 		if err != nil {
 			return Options{}, err
 		}
-		options.command = PasswordCommand{}
-		options.otherArgs["length"] = passwordLength.String()
+		options.Command = commands.PasswordCommand{}
+		options.OtherArgs["length"] = passwordLength.String()
 
 	case "vat":
 		err := vatCmd.Parse(remainingArgs[1:])
 		if err != nil {
 			return Options{}, err
 		}
-		options.command = VatCommand{}
-		options.otherArgs["country"] = strings.ToUpper(*vatInputCountry)
+		options.Command = commands.VatCommand{}
+		options.OtherArgs["country"] = strings.ToUpper(*vatInputCountry)
 
 	default:
 		fs.Usage()
@@ -224,12 +227,12 @@ func readOptions(args []string, outputWriter io.Writer) (Options, error) {
 
 func defaultFormat() OutputFormat {
 	return OutputFormat{
-		formatter: TabFormatter{},
+		Formatter: formatters.TabFormatter{},
 	}
 }
 
 func jsonFormat() OutputFormat {
 	return OutputFormat{
-		formatter: JSONFormatter{},
+		Formatter: formatters.JSONFormatter{},
 	}
 }

@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"context"
@@ -18,7 +18,7 @@ func StopIf(err error) {
 	}
 }
 
-func copyToClipboard(s string) error {
+func CopyToClipboard(s string) error {
 	err := clipboard.Init()
 	if err != nil {
 		return err
@@ -40,7 +40,7 @@ func copyToClipboard(s string) error {
 	return nil
 }
 
-func readFromClipboard() (string, error) {
+func ReadFromClipboard() (string, error) {
 	err := clipboard.Init()
 	if err != nil {
 		return "", err
@@ -61,7 +61,7 @@ func readFromClipboard() (string, error) {
 	return string(b), nil
 }
 
-func getGitHash() string {
+func GetGitHash() string {
 	info, available := debug.ReadBuildInfo()
 	if !available {
 		return ""
