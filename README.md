@@ -22,7 +22,7 @@ generated output directly to the system clipboard.
   Netherlands `NL`, etc.). **Only IT is supported at this time.**
 - **UUID Generation**: Supports generating both Version 4 (random) and Version 7 (time-ordered) UUIDs.
 - **Password Generation**: Generates random passwords with customizable length.
-- **Fictional person data with fiscal code**: Generates random data for fictional persons with their (Italian) fiscal code.
+- **Fictional persona data with fiscal code**: Generates random data for fictional persons with their (Italian) fiscal code.
 - **Clipboard Integration**: Automatically copies generated values to the system clipboard (can be disabled via flag).
 - **Flexible Output Formats**: Supports plain text (`tab`) and JSON (`json`) output.
 
