@@ -16,10 +16,10 @@ jobs:
     permissions:
       contents: write
     steps:
-    - uses: actions/checkout@v7.0.1
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
     - name: Set up Go
-      uses: actions/setup-go@v7.0.0
+      uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
       with:
         go-version: '1.27'
 
@@ -38,7 +38,7 @@ jobs:
         go test -v -p 1 ./... -coverprofile=./cover.out -covermode=atomic -coverpkg=./...
 
     - name: check test coverage
-      uses: vladopajic/go-test-coverage@v2
+      uses: vladopajic/go-test-coverage@f484eec846448c97c777a26f8b58c5a69a327e12 # v2.20.0
       with:
         profile: cover.out
         threshold-total: 75
